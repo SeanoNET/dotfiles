@@ -1,0 +1,10 @@
+[font]
+normal = { family = "JetBrains Mono" }
+size = 14.0
+
+[window]
+decorations = "none"        # Equivalent to window-decoration = false
+opacity = 0.9
+
+[selection]
+save_to_clipboard = true    # Equivalent to clipboard-read = allow
