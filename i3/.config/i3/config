@@ -88,7 +88,7 @@ floating_modifier $mod
 #scripts/zen
 bindsym $mod+Shift+z exec --no-startup-id i3zen --workspace zen --width 100 --height 100
 # focus the zen workspace
-bindsym $mod+z workspace zen 
+bindsym $mod+z workspace zen
 
 # combine all layout in $mod+e , frees up $mod+w
 # (used for: i3flip --move next)
@@ -99,6 +99,7 @@ bindsym $mod+e layout toggle splith splitv tabbed stacking
 # Show keyboard shortcuts
 #TODO: fix, it pops up a window and closes
 bindsym $mod+c exec --no-startup-id alacritty -e glow ~/.config/i3/keybindings && read -p "Press enter to exit..."
+exec --no-startup-id setxkbmap -option caps:escape
 
 # scratchpad
 bindsym $mod+y scratchpad show
@@ -309,7 +310,7 @@ bindsym XF86AudioMute exec --no-startup-id ~/.config/i3/scripts/volume_brightnes
 bindsym XF86AudioMicMute exec amixer sset Capture toggle
 
 # audio control
-bindsym XF86AudioPlay exec --no-startup-id playerctl play-pause 
+bindsym XF86AudioPlay exec --no-startup-id playerctl play-pause
 # Above line will also work for pausing
 bindsym XF86AudioNext exec --no-startup-id playerctl next
 bindsym XF86AudioPrev exec --no-startup-id playerctl previous
@@ -385,10 +386,10 @@ for_window [class=TelegramDesktop] focus
 #
 # picom: https://wiki.archlinux.org/title/Picom
 # manpage: https://man.archlinux.org/man/picom.1.en
-# The default configuration is available in /etc/xdg/picom.conf 
+# The default configuration is available in /etc/xdg/picom.conf
 # For modifications, it can be copied to ~/.config/picom/picom.conf or ~/.config/picom.conf
 # install picom package (yay -S picom)
-# start using default config 
+# start using default config
 #exec_always --no-startup-id picom -b
 #
 # for custom config:
@@ -410,7 +411,7 @@ exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 exec --no-startup-id dex --autostart --environment i3
 
 # start welcome app
-#exec --no-startup-id sh /usr/share/endeavouros/scripts/welcome --startdelay=3 
+#exec --no-startup-id sh /usr/share/endeavouros/scripts/welcome --startdelay=3
 
 # num lock activated
 #exec --no-startup-id numlockx on
@@ -448,7 +449,7 @@ exec --no-startup-id xset s 14400 dpms 0 0 0
 # dunst config used ~/.config/dunst/dunstrc
 # set alternative config if needed:
 #exec --no-startup-id /usr/bin/dunst --config ~/.config/dunst/dunstrc
-# may need to run dbus-launch explicitly: 
+# may need to run dbus-launch explicitly:
 #exec --no-startup-id dbus-launch /usr/bin/dunst
 exec --no-startup-id /usr/bin/dunst
 # alternative if you installed aside with XFCE4:
@@ -502,7 +503,7 @@ for_window [class="urxvt"] border pixel 1
 
 # set size of floating window
 #for_window [window_role="(?i)GtkFileChooserDialog"] resize set 640 480 #to set size of file choose dialog
-#for_window [class=".*"] resize set 640 480 #to change size of all floating windows 
+#for_window [class=".*"] resize set 640 480 #to change size of all floating windows
 
 # set position of floating window
 #for_window [class=".*"] move position center

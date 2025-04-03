@@ -51,7 +51,7 @@ bindkey '^n' history-search-forward
 # Aliases
 alias vim='helix'
 alias c='clear'
-alias ls='eza --icons --group-directories-first --color=always'
+alias ls='eza --icons --group-directories-first --color=always --tree'
 alias ll='eza -l --icons'
 alias la='eza -la --icons'
 alias l='eza -la --icons --git'
