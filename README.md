@@ -39,10 +39,17 @@ The following applications have configuration files in this repository:
    ```
 2. Clone this repository:
    ```bash
-   git clone https://github.com/yourusername/dotfiles.git ~/.dotfiles
+   git clone https://github.com/SeanoNET/dotfiles.git ~/.dotfiles
    cd ~/.dotfiles
    ```
-
+3. Install JetBrains Mono for Arch
+   ```bash
+   sudo pacman -S ttf-jetbrains-mono-nerd
+   ```
+4. Install JetBrains Mono for Windows
+   ```powershell
+   scoop install ttf-jetbrains-mono-nerd
+   ```
 ### Windows Prerequisites
 1. Install [Scoop](https://scoop.sh/):
    ```powershell
@@ -54,7 +61,7 @@ The following applications have configuration files in this repository:
    ```
 3. Clone this repository:
    ```powershell
-   git clone https://github.com/yourusername/dotfiles.git $HOME\.dotfiles
+   git clone https://github.com/SeanoNET/dotfiles.git $HOME\.dotfiles
    cd $HOME\.dotfiles
    ```
 
