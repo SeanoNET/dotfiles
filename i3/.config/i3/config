@@ -40,7 +40,7 @@ font pango: JetBrains Mono 10
 exec --no-startup-id picom --config ~/.config/picom/picom.conf
 exec --no-startup-id discord
 exec --no-startup-id steam
-
+exec --no-startup-id dunst # For notifications
 # kill any hanging polybar processes
 exec_always killall polybar
 exec_always --no-startup-id sh ~/.config/polybar/launch_polybar.sh
@@ -236,11 +236,9 @@ bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to update i3)
 bindsym $mod+Shift+r restart
 
-# keybinding in fancy rofi (automated):
-bindsym F1 exec --no-startup-id ~/.config/i3/scripts/keyhint-2
 # alternative
 # keybinding list in editor:
-# bindsym $mod+F1 exec --no-startup-id xed ~/.config/i3/keybindings
+bindsym $mod+F1 exec --no-startup-id rofi -e "$(cat ~/.config/i3/keybindings)"
 
 # Backlight control
 #bindsym XF86MonBrightnessUp exec --no-startup-id xbacklight +10 && notify-send "Brightness - $(xbacklight -get | cut -d '.' -f 1)%"
@@ -323,7 +321,7 @@ bindsym $mod+p exec --no-startup-id /usr/local/bin/switch-audio-port
 
 ## App shortcuts
 bindsym $mod+w exec --no-startup-id /usr/bin/firefox
-bindsym $mod+n exec --no-startup-id /usr/bin/thunar
+bindsym $mod+n exec --no-startup-id /usr/bin/dolphin
 bindsym Print exec --no-startup-id scrot ~/%Y-%m-%d-%T-screenshot.png && notify-send "Screenshot saved to ~/$(date +"%Y-%m-%d-%T")-screenshot.png"
 
 # Power Profiles menu switcher (rofi)
@@ -356,16 +354,16 @@ set $ws10 "10"
 #workspace $ws5 output HDMI-0
 
 # bind program to workspace and focus to them on startup:
-assign [class="ghostty"] $ws1
+assign [class="alacritty"] $ws1
 assign [class="(?i)firefox"] $ws2
-assign [class="Thunar"] $ws3
+assign [class="dolphin"] $ws3
 assign [class="thunderbird"] $ws4
 assign [class="TelegramDesktop"] $ws5
 
 # automatic set focus new window if it opens on another workspace than the current:
-for_window [class=ghostty] focus
+for_window [class=alacritty] focus
 for_window [class=(?i)firefox] focus
-for_window [class=Thunar] focus
+for_window [class=dolphin] focus
 for_window [class=Thunderbird] focus
 for_window [class=TelegramDesktop] focus
 

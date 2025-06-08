@@ -44,12 +44,24 @@ The following applications have configuration files in this repository:
    ```
 3. Install JetBrains Mono for Arch
    ```bash
-   sudo pacman -S ttf-jetbrains-mono-nerd
+   sudo pacman -S ttf-jetbrains-mono-nerd ttf-zed-mono-nerd
    ```
 4. Install JetBrains Mono for Windows
    ```powershell
    scoop install ttf-jetbrains-mono-nerd
    ```
+5. Install flameshot
+   ```bash
+   sudo pacman -S flameshot
+   ```
+6. Install dunst
+   ```bash
+   sudo pacman -S dunst
+   ```
+7. Install feh
+  ```bash
+  sudo pacman -S feh
+  ```
 ### Windows Prerequisites
 1. Install [Scoop](https://scoop.sh/):
    ```powershell
@@ -178,7 +190,7 @@ stow -D zsh
 - **Description**: An application launcher and window switcher.
 - **Configuration**: Located in `rofi/.config/rofi/`.
 - **Key Features**:
-  - Custom themes for power menu and keybinding hints.
+  - Custom themes for power menu and keybinding hints. https://github.com/newmanls/rofi-themes-collection
 
 ### Starship
 - **Description**: A minimal, blazing-fast shell prompt.
