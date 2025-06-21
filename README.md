@@ -27,6 +27,7 @@ The following applications have configuration files in this repository:
 11. **Eza** - A modern replacement for `ls`.
 12. **Git-Delta** - A syntax-highlighting pager for git.
 13. **glow** - A markdown viewer in the terminal.
+14. **thunar** - File Manager GUI
 ---
 
 ## Installation
@@ -62,6 +63,10 @@ The following applications have configuration files in this repository:
   ```bash
   sudo pacman -S feh
   ```
+8. Install thunar
+```bash
+  sudo pacman -S thunar
+```
 ### Windows Prerequisites
 1. Install [Scoop](https://scoop.sh/):
    ```powershell
