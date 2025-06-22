@@ -28,6 +28,7 @@ The following applications have configuration files in this repository:
 12. **Git-Delta** - A syntax-highlighting pager for git.
 13. **glow** - A markdown viewer in the terminal.
 14. **thunar** - File Manager GUI
+15. **OnePassword CLI** - Password manager
 ---
 
 ## Installation

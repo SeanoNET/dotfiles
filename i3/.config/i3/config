@@ -136,7 +136,9 @@ bindsym $mod+Shift+5 move container to workspace $ws5
 ######################################
 
 # start a terminal, re-use any detached session or create one' feature. Here's my one-liner for this (will fail miserably if you use ":" in session name):
-bindsym $mod+Return exec --no-startup-id $terminal -e tmux attach -t $(tmux ls | grep -v attached | head -1 | cut -f1 -d:) || tmux
+bindsym $mod+Return exec --no-startup-id alacritty -e ~/.config/i3/scripts/tmux-launcher.sh
+
+
 
 # kill focused window
 bindsym $mod+q kill
