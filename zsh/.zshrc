@@ -128,6 +128,7 @@ eval "$(zoxide init --cmd cd zsh)"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(git starship  azure docker docker-compose history zsh-interactive-cd)
+plugins=(git ssh-agent)
 
 source $ZSH/oh-my-zsh.sh
 
