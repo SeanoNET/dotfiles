@@ -29,6 +29,10 @@ The following applications have configuration files in this repository:
 13. **glow** - A markdown viewer in the terminal.
 14. **thunar** - File Manager GUI
 15. **OnePassword CLI** - Password manager
+16. **[git flow](https://github.com/nvie/gitflow)** - CLI tool to assist with gitflow
+17. **[GH CLI](https://cli.github.com/)
+18. **Lazygit** - A terminal UI for git commands.
+19. **Tmux** - A terminal multiplexer.
 ---
 
 ## Installation
@@ -252,6 +256,29 @@ stow -D zsh
 - **Key Features**:
   - Syntax highlighting for diffs.
   - Improved readability for git output.
+
+### Lazygit
+- **Description**: A terminal UI for git commands.
+- **Configuration**: Located in `lazygit/.config/lazygit/config.yml`.
+- **Key Features**:
+  - Custom keybindings for enhanced productivity.
+  - **`v` (in local branches view):** Checks out a GitHub pull request by letting you select from a list of open PRs.
+  - **`ctrl+r` (global):** Opens a browser to create a GitHub pull request.
+  - **`ctrl+v` (global):** Prompts for input to create a conventional commit.
+
+### Tmux
+- **Description**: A terminal multiplexer.
+- **Configuration**: Located in `tmux/.config/tmux/tmux.conf`.
+- **Key Features**:
+  - **Prefix**: `Ctrl+Space`.
+  - **Reload Config**: `prefix + r`.
+  - **Window/Pane Splitting**:
+    - `prefix + |`: Split pane horizontally.
+    - `prefix + -`: Split pane vertically.
+  - **Pane Navigation**: `prefix + h/j/k/l` (vi-style).
+  - **Pane Resizing**: `prefix + Ctrl + h/j/k/l`.
+  - **Lazygit Integration**: `prefix + g` opens Lazygit in a popup.
+  - **Plugins**: Managed with `tpm`, includes `dracula` theme and `tmux-resurrect` for session saving.
 
 ### Windows-Specific Notes
 - **Alacritty**: Configuration located in `alacritty/.config/alacritty/`.
