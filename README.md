@@ -384,7 +384,8 @@ stow -D zsh
   - **Pane Navigation**: `prefix + h/j/k/l` (vi-style).
   - **Pane Resizing**: `prefix + Ctrl + h/j/k/l`.
   - **Lazygit Integration**: `prefix + g` opens Lazygit in a popup.
-  - **Plugins**: Managed with `tpm`, includes `dracula` theme and `tmux-resurrect` for session saving.
+  - **Plugins**: Managed with `tpm`, includes `dracula` theme, `tmux-resurrect` for session saving, `tmux-command-palette`, and `tmux-tilish` - see https://github.com/jabirali/tmux-tilish?tab=readme-ov-file#keybindings.
+  
 
 ### Helix
 - **Description**: A post-modern modal text editor.
