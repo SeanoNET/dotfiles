@@ -61,6 +61,7 @@ alias ls='eza --icons --group-directories-first --color=always --tree'
 alias ll='eza -l --icons'
 alias la='eza -la --icons'
 alias l='eza -la --icons --git'
+alias sp='spotify_player'
 
 # Shell integrations
 eval "$(fzf --zsh)"
@@ -126,9 +127,10 @@ eval "$(zoxide init --cmd cd zsh)"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git starship  azure docker docker-compose history zsh-interactive-cd)
+plugins=(git starship  azure docker docker-compose history zsh-interactive-cd ssh-agent)
 
 source $ZSH/oh-my-zsh.sh
+source ~/git-flow-completion.zsh
 
 # User configuration
 
