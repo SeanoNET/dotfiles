@@ -7,6 +7,7 @@ export QT_QPA_PLATFORMTHEME=qt6ct
 
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
+export PATH="$HOME/.dotnet:$HOME/.dotnet/tools:$PATH"
 
 # Set the directory we want to store zinit and plugins
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
@@ -62,6 +63,9 @@ alias ll='eza -l --icons'
 alias la='eza -la --icons'
 alias l='eza -la --icons --git'
 alias sp='spotify_player'
+
+
+alias zed="zeditor"
 
 # Shell integrations
 eval "$(fzf --zsh)"
@@ -164,3 +168,7 @@ source ~/git-flow-completion.zsh
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+export PATH="/home/seano/.npm-global/bin:$PATH"
+
+. "$HOME/.local/bin/env"
+export PATH="$HOME/.local/bin:$PATH"
