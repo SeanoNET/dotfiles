@@ -43,7 +43,7 @@ font pango: JetBrains Mono 10
 exec --no-startup-id picom --config ~/.config/picom/picom.conf
 exec --no-startup-id flatpak run com.discordapp.Discord
 exec --no-startup-id steam
-exec --no-startup-id flatpak run com.spotify.Client
+exec --no-startup-id flatpak run com.spotify.Client 
 exec --no-startup-id dunst # For notifications
 exec --no-startup-id ~/.screenlayout/monitor.sh # Set main screen to 144hz
 
@@ -54,6 +54,20 @@ exec --no-startup-id alacritty --class scratchpad-term
 # kill any hanging polybar processes
 exec_always killall polybar
 exec_always --no-startup-id sh ~/.config/polybar/launch_polybar.sh
+
+
+# Dictate keybindings
+bindsym $mod+a exec --no-startup-id dictate_desktop
+bindsym $mod+Shift+a exec --no-startup-id "pkill dictate_desktop || dictate_desktop"
+
+# Global hotkey is handled by the app itself (Ctrl+Alt+Space)
+# Make sure the app starts with the system
+exec --no-startup-id dictate_desktop
+
+# Optional: Float the dictate window
+for_window [class="dictate"] floating enable
+for_window [class="dictate"] resize set 240 80
+for_window [class="dictate"] move position center
 
 
 #####################
@@ -188,7 +202,7 @@ bindsym $mod+Shift+$right move right
 bindsym $mod+backslash split h
 
 # split in vertical orientation
-bindsym $mod+- split v
+bindsym $mod+minus split v
 
 # enter fullscreen mode for the focused container
 bindsym $mod+f fullscreen toggle
@@ -268,9 +282,9 @@ set $ws5 "5"
 # where you have to replace VGA-0/HDMI-0 with the names for your displays
 # you can get from xrandr command
 workspace $ws1 output DisplayPort-0
-workspace $ws2 output HDMI-A-1
+workspace $ws2 output HDMI-A-0
 workspace $ws3 output DisplayPort-0
-workspace $ws4 output HDMI-A-1
+workspace $ws4 output HDMI-A-0
 workspace $ws5 output DisplayPort-0
 
 # bind program to workspace and focus to them on startup:

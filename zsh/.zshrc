@@ -65,7 +65,7 @@ alias l='eza -la --icons --git'
 alias sp='spotify_player'
 
 
-alias zed="zeditor"
+#alias zed="zeditor"
 
 # Shell integrations
 eval "$(fzf --zsh)"
@@ -171,4 +171,6 @@ export NVM_DIR="$HOME/.nvm"
 export PATH="/home/seano/.npm-global/bin:$PATH"
 
 . "$HOME/.local/bin/env"
+export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
