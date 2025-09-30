@@ -119,11 +119,31 @@ done
 
 echo ""
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}✓ Package installation complete!${NC}"
+echo -e "${BLUE}    Post-Installation Configuration${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
-echo -e "${YELLOW}Post-installation steps:${NC}"
-echo -e "  1. Start Docker service: ${BLUE}sudo systemctl enable --now docker${NC}"
-echo -e "  2. Add user to docker group: ${BLUE}sudo usermod -aG docker \$USER${NC}"
-echo -e "  3. Reboot for xpadneo driver: ${BLUE}sudo reboot${NC}"
+
+# Docker service setup (idempotent)
+if systemctl is-enabled docker &>/dev/null; then
+    echo -e "${GREEN}✓${NC} Docker service already enabled"
+else
+    echo -e "${YELLOW}→${NC} Enabling Docker service..."
+    sudo systemctl enable --now docker
+    echo -e "${GREEN}✓${NC} Docker service enabled"
+fi
+
+# Add user to docker group (idempotent)
+if groups | grep -q docker; then
+    echo -e "${GREEN}✓${NC} User already in docker group"
+else
+    echo -e "${YELLOW}→${NC} Adding user to docker group..."
+    sudo usermod -aG docker $USER
+    echo -e "${GREEN}✓${NC} User added to docker group"
+    echo -e "${YELLOW}⚠${NC}  Log out and back in for docker group to take effect"
+fi
+
+echo ""
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${GREEN}✓ Package installation complete!${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
