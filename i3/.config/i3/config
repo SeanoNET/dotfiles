@@ -20,10 +20,9 @@
 #######################
 
 # App Prefs
-set $terminal alacritty
+set $terminal ghostty
 set $browser zen-browser
 set $files thunar
-
 # set the mod key to the winkey:
 set $mod Mod4
 
@@ -49,7 +48,7 @@ exec --no-startup-id ~/.screenlayout/monitor.sh # Set main screen to 144hz
 
 
 #scratchpads 
-exec --no-startup-id alacritty --class scratchpad-term
+exec --no-startup-id ghostty --class scratchpad-term
 
 # kill any hanging polybar processes
 exec_always killall polybar
@@ -57,8 +56,8 @@ exec_always --no-startup-id sh ~/.config/polybar/launch_polybar.sh
 
 
 # Dictate keybindings
-bindsym $mod+a exec --no-startup-id dictate_desktop
-bindsym $mod+Shift+a exec --no-startup-id "pkill dictate_desktop || dictate_desktop"
+#bindsym $mod+a exec --no-startup-id dictate_desktop
+#bindsym $mod+Shift+a exec --no-startup-id "pkill dictate_desktop || dictate_desktop"
 
 # Global hotkey is handled by the app itself (Ctrl+Alt+Space)
 # Make sure the app starts with the system
@@ -152,7 +151,7 @@ bindsym $mod+Shift+5 move container to workspace $ws5
 ######################################
 
 # start a terminal, re-use any detached session or create one' feature. Here's my one-liner for this (will fail miserably if you use ":" in session name):
-bindsym $mod+Return exec --no-startup-id alacritty -e ~/.config/i3/scripts/tmux-launcher.sh
+bindsym $mod+Return exec --no-startup-id ghostty -e ~/.config/i3/scripts/tmux-launcher.sh
 
 #jump to tablet control via scrcpy
 bindsym $mod+t [class="scrcpy"] focus
@@ -289,7 +288,7 @@ workspace $ws5 output DisplayPort-0
 
 # bind program to workspace and focus to them on startup:
 # to get the class name run xprop WM_CLASS and click on the window
-assign [class="Alacritty"] $ws2
+assign [class="Ghostty"] $ws2
 assign [class="Zen-browser"] $ws1
 assign [class="Thunar"] $ws3
 assign [class="thunderbird"] $ws4
@@ -301,7 +300,7 @@ assign [class="Spotify"] $ws4
 assign [class="steam"] $ws5
 
 # automatic set focus new window if it opens on another workspace than the current:
-for_window [class="Alacritty"] focus
+for_window [class="Ghostty"] focus
 for_window [class="Zen-browser"] focus
 for_window [class="Thunar"] focus
 for_window [class="thunderbird"] focus
