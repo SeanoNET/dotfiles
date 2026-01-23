@@ -463,12 +463,56 @@ stow -D zsh
 
 ---
 
+## Dual Monitor + KVM Setup (Top-Down View)
+
+For my reference: 
+
+```
+                        MONITOR SETUP (TOP-DOWN VIEW)
+
+   ┌────────────────────┐           ┌────────────────────────────┐
+   │  Alienware 34"     │           │   Dell Monitor w/ KVM      │
+   │  (DP1 IN / HDMI2)  │           │   (HDMI1 IN / DP2 IN / USB)│
+   └────────┬───────────┘           └────────────┬───────────────┘
+            │                                     │
+     DP from Desktop                    HDMI from Desktop
+     HDMI from Laptop Dock             DP from Laptop Dock
+                                        USB from Desktop → KVM
+            │                                     │
+            └────────┐                  ┌─────────┘
+                     │                  │
+        ┌────────────▼──────────────────▼────────────┐
+        │                KVM USB HUB (in Dell)       │
+        └────────────────┬──────────────┬────────────┘
+                         │              │
+         USB from Desktop PC     USB from Laptop Dock
+
+                         ▼              ▼
+
+                 ┌────────────┐   ┌──────────────┐
+                 │ Desktop PC │   │ Laptop + Dock│
+                 └────────────┘   └──────────────┘
+```
+
+## Key Flow Summary
+
+- **Alienware 34" Monitor**
+  - DisplayPort ← from Desktop PC (for 240Hz)
+  - HDMI ← from Laptop Dock
+
+- **Dell Monitor with KVM**
+  - HDMI ← from Desktop PC
+  - DisplayPort ← from Laptop Dock
+  - USB (KVM input) ← from both Desktop & Dock
+
+- **KVM Switching** allows keyboard/mouse to follow whichever device is selected.
+
+---
 ## Contributing
 
 Feel free to fork this repository and submit pull requests for improvements or additional configurations.
 
 ---
-
 ## License
 
 This repository is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

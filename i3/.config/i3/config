@@ -20,10 +20,9 @@
 #######################
 
 # App Prefs
-set $terminal alacritty
+set $terminal ghostty
 set $browser zen-browser
 set $files thunar
-
 # set the mod key to the winkey:
 set $mod Mod4
 
@@ -43,16 +42,31 @@ font pango: JetBrains Mono 10
 exec --no-startup-id picom --config ~/.config/picom/picom.conf
 exec --no-startup-id flatpak run com.discordapp.Discord
 exec --no-startup-id steam
-exec --no-startup-id flatpak run com.spotify.Client
+exec --no-startup-id flatpak run com.spotify.Client 
 exec --no-startup-id dunst # For notifications
 exec --no-startup-id ~/.screenlayout/monitor.sh # Set main screen to 144hz
 
+
 #scratchpads 
-exec --no-startup-id alacritty --class scratchpad-term
+exec --no-startup-id ghostty --class scratchpad-term
 
 # kill any hanging polybar processes
 exec_always killall polybar
 exec_always --no-startup-id sh ~/.config/polybar/launch_polybar.sh
+
+
+# Dictate keybindings
+#bindsym $mod+a exec --no-startup-id dictate_desktop
+#bindsym $mod+Shift+a exec --no-startup-id "pkill dictate_desktop || dictate_desktop"
+
+# Global hotkey is handled by the app itself (Ctrl+Alt+Space)
+# Make sure the app starts with the system
+exec --no-startup-id dictate_desktop
+
+# Optional: Float the dictate window
+for_window [class="dictate"] floating enable
+for_window [class="dictate"] resize set 240 80
+for_window [class="dictate"] move position center
 
 
 #####################
@@ -137,8 +151,10 @@ bindsym $mod+Shift+5 move container to workspace $ws5
 ######################################
 
 # start a terminal, re-use any detached session or create one' feature. Here's my one-liner for this (will fail miserably if you use ":" in session name):
-bindsym $mod+Return exec --no-startup-id alacritty -e ~/.config/i3/scripts/tmux-launcher.sh
+bindsym $mod+Return exec --no-startup-id ghostty -e ~/.config/i3/scripts/tmux-launcher.sh
 
+#jump to tablet control via scrcpy
+bindsym $mod+t [class="scrcpy"] focus
 
 
 # kill focused window
@@ -185,7 +201,7 @@ bindsym $mod+Shift+$right move right
 bindsym $mod+backslash split h
 
 # split in vertical orientation
-bindsym $mod+- split v
+bindsym $mod+minus split v
 
 # enter fullscreen mode for the focused container
 bindsym $mod+f fullscreen toggle
@@ -264,15 +280,15 @@ set $ws5 "5"
 # use workspaces on different displays:
 # where you have to replace VGA-0/HDMI-0 with the names for your displays
 # you can get from xrandr command
-workspace $ws1 output DisplayPort-1
-workspace $ws2 output HDMI-A-1
-workspace $ws3 output DisplayPort-1
-workspace $ws4 output HDMI-A-1
-workspace $ws5 output DisplayPort-1
+workspace $ws1 output DisplayPort-0
+workspace $ws2 output HDMI-A-0
+workspace $ws3 output DisplayPort-0
+workspace $ws4 output HDMI-A-0
+workspace $ws5 output DisplayPort-0
 
 # bind program to workspace and focus to them on startup:
 # to get the class name run xprop WM_CLASS and click on the window
-assign [class="Alacritty"] $ws2
+assign [class="Ghostty"] $ws2
 assign [class="Zen-browser"] $ws1
 assign [class="Thunar"] $ws3
 assign [class="thunderbird"] $ws4
@@ -284,7 +300,7 @@ assign [class="Spotify"] $ws4
 assign [class="steam"] $ws5
 
 # automatic set focus new window if it opens on another workspace than the current:
-for_window [class="Alacritty"] focus
+for_window [class="Ghostty"] focus
 for_window [class="Zen-browser"] focus
 for_window [class="Thunar"] focus
 for_window [class="thunderbird"] focus
@@ -311,7 +327,8 @@ exec --no-startup-id dex --autostart --environment i3
 exec --no-startup-id ~/.screenlayout/monitor.sh
 
 # set wallpaper
-exec --no-startup-id sleep 1 && feh --bg-fill ~/.config/background.jpeg
+#exec --no-startup-id sleep 1 && feh --bg-fill ~/.config/background.jpeg
+exec_always --no-startup-id sleep 1 && ~/.config/i3/scripts/wallpaper.sh
 
 # set powersavings for display:
 exec --no-startup-id xset s 14400 dpms 0 0 0
@@ -325,7 +342,7 @@ exec --no-startup-id xset s 14400 dpms 0 0 0
 
 # xscreensaver
 # https://www.jwz.org/xscreensaver
-#exec --no-startup-id xscreensaver --no-splash
+exec --no-startup-id xscreensaver --no-splash
 
 # Desktop notifications
 exec --no-startup-id /usr/bin/dunst
@@ -416,13 +433,14 @@ client.urgent		    	$urgentred	$urgentred	$white		$yellowbrown	$yellowbrown
 bindsym $mod+d exec --no-startup-id rofi -show combi -combi-modi drun -modi combi \
 		-config ~/.config/rofi/config.rasi
 
+#bindsym $mod+d exec --no-startup-id  ~/opt/flare/flare_0.1.0_amd64.AppImage
 #bindsym F9 exec --no-startup-id rofi -modi drun -show drun \
 #		-config ~/.config/rofi/rofidmenu.rasi
 
 ## rofi bindings for window menu ($mod+t /F10 optional disabled)
 
-bindsym $mod+t exec --no-startup-id rofi -show window \
-		-config ~/.config/rofi/config.rasi
+# bindsym $mod+t exec --no-startup-id rofi -show window \
+# 		-config ~/.config/rofi/config.rasi
 
 #bindsym F10 exec --no-startup-id rofi -show window \
 #		-config ~/.config/rofi/rofidmenu.rasi

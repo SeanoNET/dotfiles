@@ -9,6 +9,7 @@ export PATH="$HOME/.fzf/bin:$PATH"
 
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
+export PATH="$HOME/.dotnet:$HOME/.dotnet/tools:$PATH"
 
 # Set the directory we want to store zinit and plugins
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
@@ -64,6 +65,8 @@ alias ll='eza -l --icons'
 alias la='eza -la --icons'
 alias l='eza -la --icons --git'
 alias sp='spotify_player'
+
+#alias zed="zeditor"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -131,9 +134,10 @@ source $ZSH/oh-my-zsh.sh
 source ~/git-flow-completion.zsh
 
 # Shell integrations (loaded after Oh My Zsh to preserve keybindings)
-eval "$(fzf --zsh)"
-eval "$(zoxide init --cmd cd zsh)"
-
+if [[ $- == *i* ]]; then
+  eval "$(fzf --zsh)"
+  eval "$(zoxide init --cmd cd zsh)"
+fi
 # Custom functions
 # Google search in Zen browser
 google-search() {
@@ -281,3 +285,11 @@ if [[ $- == *i* ]]; then
   sleep 0.1
   echo "💡 Tip: Type 'cheat' to view terminal shortcuts (or Ctrl+Space+? in tmux)"
 fi
+
+export PATH="/home/seano/.npm-global/bin:$PATH"
+
+. "$HOME/.local/bin/env"
+export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
+

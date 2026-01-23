@@ -1,0 +1,12 @@
+{
+    "recommendations": [
+        "github.vscode-github-actions",
+        "anan.jetbrains-darcula-theme",
+        "chadalen.vscode-jetbrains-icon-theme",
+        "anthropic.claude-code",
+        "ms-dotnettools.csharp",
+        "ms-azuretools.vscode-docker",
+        "ms-vscode.remote-explorer"
+
+    ]
+}
