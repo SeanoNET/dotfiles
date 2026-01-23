@@ -4,6 +4,8 @@
 export QT_QPA_PLATFORMTHEME=qt5ct
 export QT_QPA_PLATFORMTHEME=qt6ct
 
+# Add fzf to PATH
+export PATH="$HOME/.fzf/bin:$PATH"
 
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -62,10 +64,6 @@ alias ll='eza -l --icons'
 alias la='eza -la --icons'
 alias l='eza -la --icons --git'
 alias sp='spotify_player'
-
-# Shell integrations
-eval "$(fzf --zsh)"
-eval "$(zoxide init --cmd cd zsh)"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -132,6 +130,118 @@ plugins=(git starship  azure docker docker-compose history zsh-interactive-cd ss
 source $ZSH/oh-my-zsh.sh
 source ~/git-flow-completion.zsh
 
+# Shell integrations (loaded after Oh My Zsh to preserve keybindings)
+eval "$(fzf --zsh)"
+eval "$(zoxide init --cmd cd zsh)"
+
+# Custom functions
+# Google search in Zen browser
+google-search() {
+  local query="$*"
+  if [[ -z "$query" ]]; then
+    echo "Usage: ? <search query>"
+    return 1
+  fi
+  # URL encode the query
+  local encoded=$(python3 -c "import urllib.parse; print(urllib.parse.quote('''$query'''))")
+  local url="https://www.google.com/search?q=${encoded}"
+
+  # Try Zen browser first, fall back to default browser
+  if command -v zen-browser &> /dev/null; then
+    zen-browser "$url" &> /dev/null &
+  elif [[ -f "/mnt/c/Program Files/Zen Browser/zen.exe" ]]; then
+    "/mnt/c/Program Files/Zen Browser/zen.exe" "$url" &> /dev/null &
+  else
+    xdg-open "$url" &> /dev/null &
+  fi
+}
+
+# Claude Code query
+claude-query() {
+  local attach=false
+
+  # Check for -a flag
+  if [[ "$1" == "-a" ]]; then
+    attach=true
+    shift
+  fi
+
+  local query="$*"
+  if [[ -z "$query" ]]; then
+    echo "Usage: ?? [-a] <claude code query>"
+    echo "  -a    Open interactive Claude Code session"
+    return 1
+  fi
+
+  if [[ "$attach" == true ]]; then
+    # Interactive mode
+    claude "$query"
+  else
+    # Print mode (streaming output)
+    claude -p "$query"
+  fi
+}
+
+# Cheat sheet viewer
+cheat() {
+  local cheat_file="$HOME/dotfiles/CHEATSHEET.md"
+
+  if [[ ! -f "$cheat_file" ]]; then
+    echo "Cheat sheet not found at $cheat_file"
+    return 1
+  fi
+
+  # Check for search flag
+  if [[ "$1" == "-s" ]]; then
+    shift
+    local search_term="$*"
+    if [[ -z "$search_term" ]]; then
+      # Interactive search with fzf
+      if command -v bat &> /dev/null; then
+        grep -n "." "$cheat_file" | fzf --delimiter=: --preview 'bat --color=always --style=plain --highlight-line {1} '"$cheat_file" --preview-window=+{1}-10
+      else
+        grep -n "." "$cheat_file" | fzf --delimiter=: --preview 'sed -n {1}p '"$cheat_file"
+      fi
+    else
+      # Search for specific term
+      grep -i "$search_term" "$cheat_file" --color=always
+    fi
+  elif [[ "$1" == "-p" ]] || [[ -n "$TMUX" && "$1" != "-f" ]]; then
+    # Show in tmux popup (if in tmux) or with -p flag
+    if [[ -n "$TMUX" ]]; then
+      if command -v glow &> /dev/null; then
+        tmux popup -E -w 85% -h 85% "glow -p '$cheat_file'"
+      elif command -v bat &> /dev/null; then
+        tmux popup -E -w 85% -h 85% "bat --style=full --paging=always '$cheat_file'"
+      else
+        tmux popup -E -w 85% -h 85% "less '$cheat_file'"
+      fi
+    else
+      # Not in tmux, fall back to regular view
+      if command -v glow &> /dev/null; then
+        glow -p "$cheat_file"
+      elif command -v bat &> /dev/null; then
+        bat --style=full "$cheat_file"
+      else
+        less "$cheat_file"
+      fi
+    fi
+  else
+    # Regular view with glow, bat or less
+    if command -v glow &> /dev/null; then
+      glow -p "$cheat_file"
+    elif command -v bat &> /dev/null; then
+      bat --style=full "$cheat_file"
+    else
+      less "$cheat_file"
+    fi
+  fi
+}
+
+# Aliases with noglob to prevent glob expansion
+alias '?'='noglob google-search'
+alias '??'='noglob claude-query'
+
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -164,3 +274,10 @@ source ~/git-flow-completion.zsh
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# Welcome message (only in interactive shells)
+if [[ $- == *i* ]]; then
+  # Add a small delay to let terminal initialize
+  sleep 0.1
+  echo "💡 Tip: Type 'cheat' to view terminal shortcuts (or Ctrl+Space+? in tmux)"
+fi
