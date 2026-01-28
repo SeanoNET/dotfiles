@@ -9,6 +9,9 @@ export QT_QPA_PLATFORMTHEME=qt6ct
 export ZSH="$HOME/.oh-my-zsh"
 export PATH="$HOME/.dotnet:$HOME/.dotnet/tools:$PATH"
 
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
+export PATH=$JAVA_HOME/bin:$PATH
+
 # Set the directory we want to store zinit and plugins
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
@@ -68,8 +71,12 @@ alias sp='spotify_player'
 #alias zed="zeditor"
 
 # Shell integrations
-eval "$(fzf --zsh)"
-eval "$(zoxide init --cmd cd zsh)"
+if [[ -o interactive ]]; then
+  eval "$(fzf --zsh)"
+  eval "$(zoxide init zsh)"              # no need to also do --cmd cd
+  # OR if you specifically want cd overridden:
+  # eval "$(zoxide init --cmd cd zsh)"
+fi
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -174,3 +181,11 @@ export PATH="/home/seano/.npm-global/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
+
+export ANDROID_HOME=$HOME/Android/Sdk
+export ANDROID_SDK_ROOT=$HOME/Android/Sdk
+export PATH=$PATH:$ANDROID_HOME/emulator
+export PATH=$PATH:$ANDROID_HOME/platform-tools
+
+# Added by tally installer
+export PATH="$HOME/.tally/bin:$PATH"

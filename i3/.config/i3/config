@@ -48,7 +48,8 @@ exec --no-startup-id ~/.screenlayout/monitor.sh # Set main screen to 144hz
 
 
 #scratchpads 
-exec --no-startup-id ghostty --class scratchpad-term
+# Launch scratchpad terminal (will be moved to scratchpad automatically)
+exec --no-startup-id alacritty --class scratchpad-term
 
 # kill any hanging polybar processes
 exec_always killall polybar
@@ -120,16 +121,20 @@ bindsym $mod+e layout toggle splith splitv tabbed stacking
 
 # Show keyboard shortcuts
 #TODO: fix, it pops up a window and closes
-bindsym $mod+c exec --no-startup-id $terminal -e glow ~/.config/i3/keybindings && read -p "Press enter to exit..."
+#bindsym $mod+Shift+c exec --no-startup-id $terminal -e glow ~/.config/i3/keybindings && read -p "Press enter to exit..."
 exec --no-startup-id setxkbmap -option caps:escape
 
 # scratchpad
-for_window [class="scratchpad-term"] move to scratchpad, floating enable, resize set 1000 600, move position center
-bindsym $mod+space [class="scratchpad-term"] scratchpad show; move position center
+for_window [class="scratchpad-term"] floating enable
+for_window [class="scratchpad-term"] resize set 1000 600
+for_window [class="scratchpad-term"] move to scratchpad
+bindsym $mod+space exec --no-startup-id ~/.config/i3/scripts/scratchpad-toggle.sh
 
 # switch/iterate between workspaces
-bindsym $mod+Tab workspace next
+workspace_auto_back_and_forth yes
+bindsym $mod+Tab workspace back_and_forth
 bindsym $mod+Shift+Tab workspace prev
+bindsym $mod+Ctrl+Tab workspace next
 
 # Switch workspace keys
 bindsym $mod+1 workspace $ws1
@@ -137,6 +142,14 @@ bindsym $mod+2 workspace $ws2
 bindsym $mod+3 workspace $ws3
 bindsym $mod+4 workspace $ws4
 bindsym $mod+5 workspace $ws5
+
+# Quick jump: code / browser
+bindsym $mod+c workspace $ws1
+bindsym $mod+b workspace $ws2
+
+# Move focused container to code / browser
+bindsym $mod+Shift+c move container to workspace $ws1
+bindsym $mod+Shift+b move container to workspace $ws2
 
 # Move focused container to workspace keys
 bindsym $mod+Shift+1 move container to workspace $ws1
@@ -164,12 +177,12 @@ bindsym $mod+q kill
 # lock with a picture:
 #bindsym $mod+l exec --no-startup-id i3lock -i  ~/.config/i3/i3-lock-screen.png -p default|win -t
 # lock by blurring the screen:
-bindsym $mod+b exec --no-startup-id ~/.config/i3/scripts/blur-lock
+bindsym $mod+Shift+x exec --no-startup-id ~/.config/i3/scripts/blur-lock
 # lock in case after sleep
 exec --no-startup-id xss-lock -l ~/.config/i3/scripts/blur-lock
 
 # reload the configuration file
-bindsym $mod+Shift+c reload
+bindsym $mod+Shift+BackSpace reload
 
 # restart i3 inplace (preserves your layout/session, can be used to update i3)
 bindsym $mod+Shift+r restart
@@ -272,7 +285,7 @@ bindsym $mod+Shift+p exec --no-startup-id ~/.config/i3/scripts/power-profiles
 # Define names for default workspaces for which we configure key bindings later on.
 # We use variables to avoid repeating the names in multiple places.
 set $ws1 "1:code"
-set $ws2 "2:term"
+set $ws2 "2:web"
 set $ws3 "3:files"
 set $ws4 "4:mail"
 set $ws5 "5"
@@ -281,20 +294,28 @@ set $ws5 "5"
 # where you have to replace VGA-0/HDMI-0 with the names for your displays
 # you can get from xrandr command
 workspace $ws1 output DisplayPort-0
-workspace $ws2 output HDMI-A-0
+workspace $ws2 output DisplayPort-0
 workspace $ws3 output DisplayPort-0
 workspace $ws4 output HDMI-A-0
 workspace $ws5 output DisplayPort-0
 
 # bind program to workspace and focus to them on startup:
 # to get the class name run xprop WM_CLASS and click on the window
-assign [class="Ghostty"] $ws2
-assign [class="Zen-browser"] $ws1
+assign [class="Ghostty"] $ws1
+assign [class="Zen-browser"] $ws2
+assign [class="zen-browser"] $ws2
+assign [class="Zen"] $ws2
+assign [class="zen"] $ws2
 assign [class="Thunar"] $ws3
 assign [class="thunderbird"] $ws4
 assign [class="code-oss"] $ws1
+assign [class="Code"] $ws1
+assign [class="cursor"] $ws1
+assign [class="Cursor"] $ws1
 assign [class="jetbrains-rider"] $ws1
 assign [class="dev.zed.Zed"] $ws1
+assign [class="zed"] $ws1
+assign [class="Zed"] $ws1
 assign [class="discord"] $ws4
 assign [class="Spotify"] $ws4
 assign [class="steam"] $ws5

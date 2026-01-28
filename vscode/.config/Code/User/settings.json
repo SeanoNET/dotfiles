@@ -69,5 +69,6 @@
         }
     ],
     "vim.leader": "<space>",
-  "editor.lineNumbers": "relative" 
+"editor.lineNumbers": "relative",
+"redhat.telemetry.enabled": false
 }
