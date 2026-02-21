@@ -405,7 +405,7 @@ if [[ -f "$HOME/.ssh/id_ed25519" ]]; then
     echo -e "${GREEN}✓${NC} SSH key already exists"
 else
     echo -e "${YELLOW}→${NC} Generating SSH key..."
-    ssh-keygen -t ed25519 -f "$HOME/.ssh/id_ed25519" -N "" -C "$USER@$(hostname)"
+    ssh-keygen -t ed25519 -f "$HOME/.ssh/id_ed25519" -C "$USER@$(hostname)"
     echo -e "${GREEN}✓${NC} SSH key generated"
     echo -e "${YELLOW}⚠${NC}  Public key:"
     cat "$HOME/.ssh/id_ed25519.pub"
