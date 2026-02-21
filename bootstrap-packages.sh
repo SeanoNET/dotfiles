@@ -201,7 +201,7 @@ AUR_PACKAGES=(
     "autotiling"
     "bluetuith"
     "ghostty"
-    "bambu-studio"
+    "bambustudio-bin"
     "scrcpy"
     "spotify-player-full"
     "zen-browser-bin"
