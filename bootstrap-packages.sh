@@ -182,6 +182,10 @@ OFFICIAL_PACKAGES=(
     "wireplumber"
     "pavucontrol"
 
+    # Editors
+    "code"
+    "zed"
+
     # Apps
     "spotify-player"
     "obsidian"
@@ -328,6 +332,10 @@ STOW_PACKAGES=(
 for pkg in "${STOW_PACKAGES[@]}"; do
     if [[ -d "$DOTFILES_DIR/$pkg" ]]; then
         echo -e "${YELLOW}→${NC} Stowing $pkg..."
+        # Adopt existing files so stow can replace them with symlinks
+        stow --dir="$DOTFILES_DIR" --target="$HOME" --adopt "$pkg" 2>/dev/null || true
+        # Restore dotfiles versions and create proper symlinks
+        (cd "$DOTFILES_DIR" && git checkout -- "$pkg")
         stow --dir="$DOTFILES_DIR" --target="$HOME" --restow "$pkg" 2>&1 | while read -r line; do
             echo -e "  ${RED}$line${NC}"
         done
