@@ -391,6 +391,27 @@ echo -e "${BLUE}    Post-Installation Configuration${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
+# SSH setup
+if [[ -d "$HOME/.ssh" ]]; then
+    echo -e "${GREEN}✓${NC} ~/.ssh directory exists"
+else
+    echo -e "${YELLOW}→${NC} Creating ~/.ssh directory..."
+    mkdir -p "$HOME/.ssh"
+    chmod 700 "$HOME/.ssh"
+    echo -e "${GREEN}✓${NC} ~/.ssh directory created"
+fi
+
+if [[ -f "$HOME/.ssh/id_ed25519" ]]; then
+    echo -e "${GREEN}✓${NC} SSH key already exists"
+else
+    echo -e "${YELLOW}→${NC} Generating SSH key..."
+    ssh-keygen -t ed25519 -f "$HOME/.ssh/id_ed25519" -N "" -C "$USER@$(hostname)"
+    echo -e "${GREEN}✓${NC} SSH key generated"
+    echo -e "${YELLOW}⚠${NC}  Public key:"
+    cat "$HOME/.ssh/id_ed25519.pub"
+    echo ""
+fi
+
 # Docker service
 if systemctl is-enabled docker &>/dev/null; then
     echo -e "${GREEN}✓${NC} Docker service already enabled"
