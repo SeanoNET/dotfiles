@@ -125,7 +125,7 @@ OFFICIAL_PACKAGES=(
     "xorg-setxkbmap"
     "xorg-xbacklight"
     "polkit-gnome"
-    "thunar"
+    "nautilus"
     "xscreensaver"
 
     # Terminals
@@ -168,6 +168,12 @@ OFFICIAL_PACKAGES=(
     "qt5ct"
     "qt6ct"
 
+    # Networking / Audio
+    "networkmanager"
+    "nm-connection-editor"
+    "wireplumber"
+    "pavucontrol"
+
     # Apps
     "obsidian"
     "steam"
@@ -190,9 +196,10 @@ echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 
 AUR_PACKAGES=(
-    "1password"
+    "1password-beta"
     "azure-cli"
     "autotiling"
+    "bluetuith"
     "ghostty"
     "orca-slicer"
     "scrcpy"

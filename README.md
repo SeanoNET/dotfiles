@@ -37,41 +37,24 @@ The following applications have configuration files in this repository:
 
 ## Installation
 
-### Prerequisites
-1. Install GNU Stow:
-   ```bash
-   sudo apt install stow  # For Debian/Ubuntu
-   sudo pacman -S stow    # For Arch-based distros
-   ```
-2. Clone this repository:
-   ```bash
-   git clone https://github.com/SeanoNET/dotfiles.git ~/.dotfiles
-   cd ~/.dotfiles
-   ```
-3. Install JetBrains Mono for Arch
-   ```bash
-   sudo pacman -S ttf-jetbrains-mono-nerd ttf-zed-mono-nerd
-   ```
-4. Install JetBrains Mono for Windows
-   ```powershell
-   scoop install ttf-jetbrains-mono-nerd
-   ```
-5. Install flameshot
-   ```bash
-   sudo pacman -S flameshot
-   ```
-6. Install dunst
-   ```bash
-   sudo pacman -S dunst
-   ```
-7. Install feh
-  ```bash
-  sudo pacman -S feh
-  ```
-8. Install thunar
+### One-liner (fresh Arch/EndeavourOS machine)
+
 ```bash
-  sudo pacman -S thunar
+bash <(curl -s https://raw.githubusercontent.com/SeanoNET/dotfiles/main/bootstrap-packages.sh)
 ```
+
+This installs all packages, AUR helpers, fonts, CLI tools, shell setup, stow symlinks, and post-install config in one shot.
+
+### Manual setup
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/SeanoNET/dotfiles.git ~/dotfiles
+   cd ~/dotfiles
+   ```
+2. Run the bootstrap script:
+   ```bash
+   ./bootstrap-packages.sh
+   ```
 ### Windows Prerequisites
 1. Install [Scoop](https://scoop.sh/):
    ```powershell
