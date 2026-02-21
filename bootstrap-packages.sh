@@ -103,6 +103,10 @@ else
     echo -e "${GREEN}✓${NC} yay installed"
 fi
 
+# ── Sync package database ──────────────────────────────────────────
+echo -e "${BLUE}Syncing package database...${NC}"
+sudo pacman -Sy
+
 # ── Official Repository Packages ────────────────────────────────────
 
 echo ""
@@ -190,7 +194,6 @@ OFFICIAL_PACKAGES=(
     # Apps
     "spotify-player"
     "obsidian"
-    "steam"
     "power-profiles-daemon"
 
     # Flatpak (installed here so the flatpak section can use it)
@@ -211,7 +214,7 @@ echo ""
 
 AUR_PACKAGES=(
     "1password-beta"
-    "azure-cli"
+    "azure-cli-bin"
     "autotiling"
     "bluetuith"
     "ghostty"
