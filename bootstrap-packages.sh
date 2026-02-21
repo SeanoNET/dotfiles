@@ -201,7 +201,7 @@ AUR_PACKAGES=(
     "autotiling"
     "bluetuith"
     "ghostty"
-    "orca-slicer"
+    "bambu-studio"
     "scrcpy"
     "spotify-player-full"
     "zen-browser-bin"
