@@ -8,11 +8,6 @@
 # Enable XWayland for X11 app compatibility
 xwayland enable
 
-# Wayland environment variables
-exec export QT_QPA_PLATFORM=wayland
-exec export MOZ_ENABLE_WAYLAND=1
-exec export XDG_CURRENT_DESKTOP=sway
-
 # App Prefs
 set $terminal ghostty
 set $browser zen-browser
@@ -35,9 +30,6 @@ font pango: JetBrains Mono 10
 # Output config:      #
 #######################
 
-# Wallpaper
-output * bg ~/.config/background.jpeg fill
-
 # Uncomment and adjust for your monitors:
 # output DisplayPort-0 resolution 3440x1440@240Hz
 # output HDMI-A-0 resolution 1920x1080@60Hz
@@ -55,9 +47,9 @@ input type:keyboard {
 #######################
 
 # Lock screen
-bindsym $mod+Shift+x exec --no-startup-id ~/.config/sway/scripts/blur-lock
+bindsym $mod+Shift+x exec ~/.config/sway/scripts/blur-lock
 
-# Idle management (replaces xss-lock, xset, xscreensaver)
+# Idle management
 exec swayidle -w \
     timeout 300 'swaylock -f' \
     timeout 600 'swaymsg "output * power off"' \
@@ -68,41 +60,35 @@ exec swayidle -w \
 # Startup:            #
 #######################
 
-exec --no-startup-id flatpak run com.discordapp.Discord
-exec --no-startup-id steam
-exec --no-startup-id flatpak run com.spotify.Client
-exec --no-startup-id dunst # For notifications
+exec flatpak run com.discordapp.Discord
+exec dunst
 
 # Scratchpad terminal
-exec --no-startup-id alacritty --class scratchpad-term
+exec alacritty --class scratchpad-term
 
-# Waybar (replaces polybar)
-exec_always killall waybar; waybar &
+# Waybar
+exec_always bash -c 'killall waybar 2>/dev/null; waybar'
 
-# Dictate (likely XWayland)
-exec --no-startup-id dictate_desktop
+# Dictate (user project, likely XWayland)
+exec dictate_desktop
 for_window [class="dictate"] floating enable
 for_window [class="dictate"] resize set 240 80
 for_window [class="dictate"] move position center
 
 # Polkit agent
-exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 
 # dex autostart (.desktop files)
-exec --no-startup-id dex --autostart --environment sway
+exec dex --autostart --environment sway
 
-# Wallpaper script
-exec_always --no-startup-id sleep 1 && ~/.config/sway/scripts/wallpaper.sh
+# Wallpaper
+exec_always bash -c 'sleep 1 && ~/.config/sway/scripts/wallpaper.sh'
 
-# Desktop notifications
-exec --no-startup-id /usr/bin/dunst
+# Autotiling (system package)
+exec_always autotiling --limit 2
 
-# Autotiling
-exec_always --no-startup-id ~/.config/sway/scripts/autotiling.py --limit 2
-
-# gnome-keyring (from xprofile)
-exec eval $(gnome-keyring-daemon --start)
-exec export SSH_AUTH_SOCK
+# gnome-keyring
+exec bash -c 'eval $(gnome-keyring-daemon --start --components=secrets,ssh,pkcs11) && export SSH_AUTH_SOCK && systemctl --user import-environment SSH_AUTH_SOCK'
 
 # Vicinae launcher
 exec vicinae
@@ -117,7 +103,7 @@ workspace_layout default
 # extra options for windows: #
 ##############################
 
-# Border indicator on windows (sway equivalent of new_window pixel 1)
+# Border indicator on windows
 default_border pixel 1
 
 # Set inner/outer gaps
@@ -125,11 +111,7 @@ gaps inner 6
 gaps outer 3
 
 # Use Mouse+$mod to drag floating windows
-floating_modifier $mod
-
-# i3zen (may need sway equivalent)
-bindsym $mod+Shift+z exec --no-startup-id i3zen --workspace zen --width 100 --height 100
-bindsym $mod+z workspace zen
+floating_modifier $mod normal
 
 # Layout toggle
 bindsym $mod+e layout toggle splith splitv tabbed stacking
@@ -141,7 +123,7 @@ for_window [app_id="scratchpad-term"] move to scratchpad
 for_window [class="scratchpad-term"] floating enable
 for_window [class="scratchpad-term"] resize set 1000 600
 for_window [class="scratchpad-term"] move to scratchpad
-bindsym $mod+space exec --no-startup-id ~/.config/sway/scripts/scratchpad-toggle.sh
+bindsym $mod+space exec ~/.config/sway/scripts/scratchpad-toggle.sh
 
 # Switch/iterate between workspaces
 workspace_auto_back_and_forth yes
@@ -176,7 +158,7 @@ bindsym $mod+Shift+5 move container to workspace $ws5
 ######################################
 
 # Start a terminal with tmux
-bindsym $mod+Return exec --no-startup-id ghostty -e ~/.config/sway/scripts/tmux-launcher.sh
+bindsym $mod+Return exec ghostty -e ~/.config/sway/scripts/tmux-launcher.sh
 
 # Jump to tablet control via scrcpy
 bindsym $mod+t [class="scrcpy"] focus
@@ -185,17 +167,14 @@ bindsym $mod+t [class="scrcpy"] focus
 bindsym $mod+q kill
 
 # Reload the configuration file
-bindsym $mod+Shift+BackSpace reload
-
-# Restart sway inplace
 bindsym $mod+Shift+r reload
 
-# Keybinding list
-bindsym $mod+F1 exec --no-startup-id rofi -e "$(cat ~/.config/sway/keybindings)"
+# Keybinding cheatsheet
+bindsym $mod+F1 exec $terminal -e bash -c 'grep "^bindsym" ~/.config/sway/config | less'
 
 # Backlight control
-bindsym XF86MonBrightnessUp exec --no-startup-id ~/.config/sway/scripts/volume_brightness.sh brightness_up
-bindsym XF86MonBrightnessDown exec --no-startup-id ~/.config/sway/scripts/volume_brightness.sh brightness_down
+bindsym XF86MonBrightnessUp exec ~/.config/sway/scripts/volume_brightness.sh brightness_up
+bindsym XF86MonBrightnessDown exec ~/.config/sway/scripts/volume_brightness.sh brightness_down
 
 # Change focus
 bindsym $mod+$left focus left
@@ -229,45 +208,42 @@ bindsym $mod+Shift+space floating toggle
 bindsym $mod+a focus parent
 
 # Open new empty workspace
-bindsym $mod+Shift+n exec --no-startup-id ~/.config/sway/scripts/empty_workspace
+bindsym $mod+Shift+n exec ~/.config/sway/scripts/empty_workspace
 
-# Screenshots (grim + slurp replaces scrot/flameshot)
+# Screenshots (grim + slurp)
 bindsym Print exec grim ~/$(date +%Y-%m-%d-%T)-screenshot.png && notify-send "Screenshot saved"
 bindsym $mod+Shift+s exec grim -g "$(slurp)" - | wl-copy
 
 # Multimedia Keys
 
 # Volume (using dunst osc)
-bindsym XF86AudioRaiseVolume exec --no-startup-id ~/.config/sway/scripts/volume_brightness.sh volume_up
-bindsym XF86AudioLowerVolume exec --no-startup-id ~/.config/sway/scripts/volume_brightness.sh volume_down
+bindsym XF86AudioRaiseVolume exec ~/.config/sway/scripts/volume_brightness.sh volume_up
+bindsym XF86AudioLowerVolume exec ~/.config/sway/scripts/volume_brightness.sh volume_down
 
 # Granular volume control
-bindsym $mod+XF86AudioRaiseVolume exec --no-startup-id amixer -D pulse sset Master 1%+ && pkill -RTMIN+1 i3blocks
-bindsym $mod+XF86AudioLowerVolume exec --no-startup-id amixer -D pulse sset Master 1%- && pkill -RTMIN+1 i3blocks
+bindsym $mod+XF86AudioRaiseVolume exec amixer -D pulse sset Master 1%+
+bindsym $mod+XF86AudioLowerVolume exec amixer -D pulse sset Master 1%-
 
 # Mute
-bindsym XF86AudioMute exec --no-startup-id ~/.config/sway/scripts/volume_brightness.sh volume_mute
+bindsym XF86AudioMute exec ~/.config/sway/scripts/volume_brightness.sh volume_mute
 
 # Mic mute toggle
 bindsym XF86AudioMicMute exec amixer sset Capture toggle
 
 # Audio control
-bindsym XF86AudioPlay exec --no-startup-id playerctl play-pause
-bindsym XF86AudioNext exec --no-startup-id playerctl next
-bindsym XF86AudioPrev exec --no-startup-id playerctl previous
-
-# Redirect sound to headphones
-bindsym $mod+p exec --no-startup-id /usr/local/bin/switch-audio-port
+bindsym XF86AudioPlay exec playerctl play-pause
+bindsym XF86AudioNext exec playerctl next
+bindsym XF86AudioPrev exec playerctl previous
 
 # App shortcuts
-bindsym $mod+w exec --no-startup-id /usr/bin/$browser
-bindsym $mod+n exec --no-startup-id /usr/bin/$files
+bindsym $mod+w exec /usr/bin/$browser
+bindsym $mod+n exec /usr/bin/$files
 
 # Power Profiles menu switcher (rofi)
-bindsym $mod+Shift+p exec --no-startup-id ~/.config/sway/scripts/power-profiles
+bindsym $mod+Shift+p exec ~/.config/sway/scripts/power-profiles
 
 # Launcher (vicinae)
-bindsym $mod+d exec --no-startup-id vicinae toggle
+bindsym $mod+d exec vicinae toggle
 
 ##########################################
 # configuration for workspace behaviour: #
@@ -331,16 +307,16 @@ for_window [app_id="thunderbird"] focus
 # floating rules #
 ##################
 
-for_window [class="Yad" instance="yad"] floating enable
-for_window [class="Galculator" instance="galculator"] floating enable
-for_window [class="Blueberry.py" instance="blueberry.py"] floating enable
-for_window [class="Xsane" instance="xsane"] floating enable
-for_window [class="Pavucontrol" instance="pavucontrol"] floating enable
+for_window [class="Yad"] floating enable
+for_window [class="Galculator"] floating enable
+for_window [class="Blueberry.py"] floating enable
+for_window [class="Xsane"] floating enable
+for_window [class="Pavucontrol"] floating enable
 for_window [app_id="pavucontrol"] floating enable
-for_window [class="qt5ct" instance="qt5ct"] floating enable
-for_window [class="Bluetooth-sendto" instance="bluetooth-sendto"] floating enable
+for_window [class="qt5ct"] floating enable
+for_window [class="Bluetooth-sendto"] floating enable
 for_window [class="Pamac-manager"] floating enable
-for_window [window_role="About"] floating enable
+for_window [title="About"] floating enable
 
 # Border of floating window
 for_window [class="urxvt"] border pixel 1

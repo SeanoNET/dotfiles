@@ -64,7 +64,7 @@ where:
 
 This script depends on:
   - systemd,
-  - i3,
+  - sway,
   - rofi or zenity."
 
 # Check whether the user-defined launcher is valid
@@ -172,7 +172,7 @@ function ask_confirmation() {
   fi
 
   if [ "${confirmed}" == 0 ]; then
-    swaymsg -q "exec --no-startup-id ${menu[${selection}]}"
+    swaymsg -q "exec ${menu[${selection}]}"
   fi
 }
 
@@ -181,6 +181,6 @@ if [[ $? -eq 0 && ! -z ${selection} ]]; then
         ${menu_confirm} =~ (^|[[:space:]])"${selection}"($|[[:space:]]) ]]; then
     ask_confirmation
   else
-    swaymsg -q "exec --no-startup-id ${menu[${selection}]}"
+    swaymsg -q "exec ${menu[${selection}]}"
   fi
 fi

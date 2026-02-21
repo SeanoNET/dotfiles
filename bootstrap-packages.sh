@@ -160,8 +160,8 @@ OFFICIAL_PACKAGES=(
     "lazygit"
     "starship"
     "python"
-    "python-i3ipc"
     "pacman-contrib"
+    "rofi"
 
     # Dev Tools
     "docker"
@@ -334,6 +334,7 @@ STOW_PACKAGES=(
     git
     helix
     lazygit
+    rofi
     starship
     sway
     swaylock
