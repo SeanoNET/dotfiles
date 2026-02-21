@@ -3,7 +3,10 @@
 # One-liner for fresh machine:
 #   bash <(curl -s https://raw.githubusercontent.com/SeanoNET/dotfiles/main/bootstrap-packages.sh)
 
-set -e
+set -euo pipefail
+
+# Allow individual package installs to fail without aborting the script
+install_failed=0
 
 # Colors for output
 RED='\033[0;31m'
@@ -60,16 +63,16 @@ install_if_missing() {
     echo -e "${YELLOW}→${NC} Installing $package..."
 
     if [[ "$source" == "official" ]]; then
-        sudo pacman -S --noconfirm --needed "$package"
+        sudo pacman -S --noconfirm --needed "$package" || true
     else
-        $AUR_HELPER -S --noconfirm --needed "$package"
+        $AUR_HELPER -S --noconfirm --needed "$package" || true
     fi
 
     if is_installed "$package"; then
         echo -e "${GREEN}✓${NC} $package installed successfully"
     else
-        echo -e "${RED}✗${NC} Failed to install $package"
-        return 1
+        echo -e "${RED}✗${NC} Failed to install $package (continuing...)"
+        install_failed=1
     fi
 }
 
