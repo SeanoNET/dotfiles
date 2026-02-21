@@ -289,7 +289,7 @@ if [[ -d "$HOME/.nvm" ]]; then
     echo -e "${GREEN}✓${NC} nvm already installed"
 else
     echo -e "${YELLOW}→${NC} Installing nvm..."
-    unset NVM_DIR
+    export NVM_DIR="$HOME/.nvm"
     PROFILE=/dev/null bash -c "$(curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh)"
     echo -e "${GREEN}✓${NC} nvm installed"
 fi
