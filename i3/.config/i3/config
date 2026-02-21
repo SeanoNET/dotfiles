@@ -302,6 +302,7 @@ workspace $ws5 output DisplayPort-0
 # bind program to workspace and focus to them on startup:
 # to get the class name run xprop WM_CLASS and click on the window
 assign [class="Ghostty"] $ws1
+assign [class="ghostty"] $ws1
 assign [class="Zen-browser"] $ws2
 assign [class="zen-browser"] $ws2
 assign [class="Zen"] $ws2
@@ -322,7 +323,11 @@ assign [class="steam"] $ws5
 
 # automatic set focus new window if it opens on another workspace than the current:
 for_window [class="Ghostty"] focus
+for_window [class="ghostty"] focus
 for_window [class="Zen-browser"] focus
+for_window [class="zen-browser"] focus
+for_window [class="Zen"] focus
+for_window [class="zen"] focus
 for_window [class="Thunar"] focus
 for_window [class="thunderbird"] focus
 
@@ -451,8 +456,8 @@ client.urgent		    	$urgentred	$urgentred	$white		$yellowbrown	$yellowbrown
 
 ## rofi bindings fancy application menu ($mod+d /F9 optional disabled)
 
-bindsym $mod+d exec --no-startup-id rofi -show combi -combi-modi drun -modi combi \
-		-config ~/.config/rofi/config.rasi
+bindsym $mod+d exec --no-startup-id vicinae toggle #rofi -show combi -combi-modi drun -modi combi \
+		#-config ~/.config/rofi/config.rasi
 
 #bindsym $mod+d exec --no-startup-id  ~/opt/flare/flare_0.1.0_amd64.AppImage
 #bindsym F9 exec --no-startup-id rofi -modi drun -show drun \
