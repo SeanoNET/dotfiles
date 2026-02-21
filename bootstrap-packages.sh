@@ -31,10 +31,10 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILES_DIR="$HOME/dotfiles"
 
-if [[ -d "$SCRIPT_DIR/.git" && -d "$SCRIPT_DIR/i3" && -d "$SCRIPT_DIR/zsh" ]]; then
+if [[ -d "$SCRIPT_DIR/.git" && -d "$SCRIPT_DIR/zsh" ]]; then
     DOTFILES_DIR="$SCRIPT_DIR"
     echo -e "${GREEN}✓${NC} Running from dotfiles repo: $DOTFILES_DIR"
-elif [[ -d "$DOTFILES_DIR/.git" && -d "$DOTFILES_DIR/i3" ]]; then
+elif [[ -d "$DOTFILES_DIR/.git" && -d "$DOTFILES_DIR/zsh" ]]; then
     echo -e "${GREEN}✓${NC} Found existing dotfiles at $DOTFILES_DIR"
 else
     echo -e "${YELLOW}→${NC} Cloning dotfiles to $DOTFILES_DIR..."
@@ -195,6 +195,10 @@ OFFICIAL_PACKAGES=(
     "spotify-player"
     "obsidian"
     "power-profiles-daemon"
+    "azure-cli"
+    "autotiling"
+    "ghostty"
+    "scrcpy"
 
     # Flatpak (installed here so the flatpak section can use it)
     "flatpak"
@@ -214,13 +218,9 @@ echo ""
 
 AUR_PACKAGES=(
     "1password-beta"
-    "azure-cli-bin"
-    "autotiling"
     "bluetuith"
-    "ghostty"
     "bambustudio-bin"
     "opencode-bin"
-    "scrcpy"
     "vicinae-bin"
     "zen-browser-bin"
 )
@@ -476,7 +476,7 @@ echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 echo -e "${YELLOW}Manual steps remaining:${NC}"
 echo -e "  1. Log out and back in (docker group + shell change)"
-echo -e "  2. Set up monitor layout with arandr"
+echo -e "  2. Set up monitor layout with wlr-randr or sway output config"
 echo -e "  3. Resolve any stow conflicts printed above"
 echo -e "  4. In tmux: prefix + I (if tpm plugin install didn't run)"
 echo -e "  5. Run: nvm install --lts (for Node.js)"
