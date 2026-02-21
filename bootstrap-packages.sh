@@ -168,6 +168,14 @@ OFFICIAL_PACKAGES=(
     "qt5ct"
     "qt6ct"
 
+    # Utilities
+    "arandr"
+    "xclip"
+    "jq"
+    "fd"
+    "btop"
+    "unzip"
+
     # Networking / Audio
     "networkmanager"
     "nm-connection-editor"
@@ -175,6 +183,7 @@ OFFICIAL_PACKAGES=(
     "pavucontrol"
 
     # Apps
+    "spotify-player"
     "obsidian"
     "steam"
     "power-profiles-daemon"
@@ -203,7 +212,6 @@ AUR_PACKAGES=(
     "ghostty"
     "bambustudio-bin"
     "scrcpy"
-    "spotify-player-full"
     "zen-browser-bin"
 )
 
