@@ -218,7 +218,9 @@ AUR_PACKAGES=(
     "bluetuith"
     "ghostty"
     "bambustudio-bin"
+    "opencode-bin"
     "scrcpy"
+    "vicinae-bin"
     "zen-browser-bin"
 )
 
@@ -260,7 +262,7 @@ done
 
 echo ""
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BLUE}    Install-Script Tools (oh-my-zsh, zinit, nvm, tpm)${NC}"
+echo -e "${BLUE}    Install-Script Tools${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
@@ -303,6 +305,15 @@ else
     mkdir -p "$(dirname "$TPM_DIR")"
     git clone https://github.com/tmux-plugins/tpm "$TPM_DIR"
     echo -e "${GREEN}✓${NC} tpm installed"
+fi
+
+# claude code
+if command -v claude &>/dev/null; then
+    echo -e "${GREEN}✓${NC} claude code already installed"
+else
+    echo -e "${YELLOW}→${NC} Installing claude code..."
+    curl -fsSL https://claude.ai/install.sh | bash
+    echo -e "${GREEN}✓${NC} claude code installed"
 fi
 
 # ── GNU Stow Symlinks ──────────────────────────────────────────────
