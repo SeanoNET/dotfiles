@@ -309,6 +309,8 @@ echo -e "${BLUE}    GNU Stow Symlinks${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
+BACKUP_DIR="$HOME/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)"
+
 STOW_PACKAGES=(
     alacritty
     background
@@ -332,6 +334,15 @@ STOW_PACKAGES=(
 for pkg in "${STOW_PACKAGES[@]}"; do
     if [[ -d "$DOTFILES_DIR/$pkg" ]]; then
         echo -e "${YELLOW}→${NC} Stowing $pkg..."
+        # Back up existing real files before stow overwrites them
+        while IFS= read -r target; do
+            dest="$HOME/$target"
+            if [[ -f "$dest" && ! -L "$dest" ]]; then
+                mkdir -p "$BACKUP_DIR/$(dirname "$target")"
+                cp "$dest" "$BACKUP_DIR/$target"
+                echo -e "  ${BLUE}↪${NC} Backed up $target"
+            fi
+        done < <(cd "$DOTFILES_DIR/$pkg" && find . -type f | sed 's|^\./||')
         # Adopt existing files so stow can replace them with symlinks
         stow --dir="$DOTFILES_DIR" --target="$HOME" --adopt "$pkg" 2>/dev/null || true
         # Restore dotfiles versions and create proper symlinks
