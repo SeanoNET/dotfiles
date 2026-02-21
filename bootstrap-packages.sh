@@ -128,7 +128,7 @@ OFFICIAL_PACKAGES=(
     "brightnessctl"
     "wlr-randr"
     "xdg-desktop-portal-wlr"
-    "xwayland"
+    "xorg-xwayland"
     "dunst"
     "dex"
     "imagemagick"

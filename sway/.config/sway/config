@@ -60,8 +60,9 @@ exec swayidle -w \
 # Startup:            #
 #######################
 
-exec flatpak run com.discordapp.Discord
 exec dunst
+exec swaymsg workspace $ws1
+exec flatpak run com.discordapp.Discord
 
 # Scratchpad terminal
 exec alacritty --class scratchpad-term
@@ -288,6 +289,11 @@ assign [class="Zed"] $ws1
 assign [class="discord"] $ws4
 assign [class="Spotify"] $ws4
 assign [class="steam"] $ws5
+
+# Prevent background apps from stealing focus
+no_focus [class="discord"]
+no_focus [class="Spotify"]
+no_focus [class="steam"]
 
 # Automatic focus on new windows
 for_window [app_id="ghostty"] focus
