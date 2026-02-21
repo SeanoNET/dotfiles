@@ -1,0 +1,33 @@
+daemonize
+show-failed-attempts
+ignore-empty-password
+
+# Colors (matching theme)
+color=1e1e1edd
+inside-color=1e1e1e00
+ring-color=1b9fc6ff
+key-hl-color=5294e2ff
+line-color=00000000
+separator-color=00000000
+
+# Wrong password
+inside-wrong-color=bd2c4080
+ring-wrong-color=bd2c40ff
+text-wrong-color=ffffffff
+
+# Verifying
+inside-ver-color=1b9fc680
+ring-ver-color=1b9fc6ff
+text-ver-color=ffffffff
+
+# Clear
+inside-clear-color=e1b70080
+ring-clear-color=e1b700ff
+text-clear-color=ffffffff
+
+# Layout
+indicator-radius=100
+indicator-thickness=10
+
+# Font
+font=JetBrains Mono

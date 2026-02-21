@@ -1,0 +1,217 @@
+/* ==========================================================
+ * Waybar Style - Dark semi-transparent theme
+ * Ported from polybar config
+ * Background: rgba(30,30,30,0.8)  Accent: #1b9fc6  Alert: #bd2c40
+ * ========================================================== */
+
+* {
+    font-family: "JetBrains Mono Nerd Font", monospace;
+    font-size: 12px;
+    border: none;
+    border-radius: 0;
+    min-height: 0;
+}
+
+window#waybar {
+    background: rgba(30, 30, 30, 0.8);
+    color: #ffffff;
+}
+
+/* Reset all modules */
+#workspaces,
+#mode,
+#window,
+#tray,
+#custom-pacman,
+#temperature,
+#custom-spotify,
+#pulseaudio,
+#battery,
+#memory,
+#cpu,
+#network,
+#disk,
+#custom-power,
+#clock {
+    padding: 0 8px;
+    margin: 0 1px;
+    color: #ffffff;
+}
+
+/* ---- Left modules ---- */
+
+#workspaces button {
+    padding: 0 6px;
+    color: #888888;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+}
+
+#workspaces button:hover {
+    background: rgba(27, 159, 198, 0.3);
+    color: #ffffff;
+}
+
+#workspaces button.focused,
+#workspaces button.active {
+    background: #1b9fc6;
+    color: #ffffff;
+}
+
+#workspaces button.urgent {
+    background: #bd2c40;
+    color: #ffffff;
+}
+
+#mode {
+    background: #1b9fc6;
+    color: #ffffff;
+    padding: 0 8px;
+}
+
+/* ---- Center modules ---- */
+
+#window {
+    color: #ffffff;
+    font-weight: normal;
+}
+
+/* ---- Right modules ---- */
+
+#tray {
+    padding: 0 6px;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+}
+
+#custom-pacman {
+    color: #1b9fc6;
+}
+
+#temperature {
+    color: #ffffff;
+}
+
+#temperature.critical {
+    color: #bd2c40;
+}
+
+#custom-spotify {
+    color: #1db954;
+}
+
+#pulseaudio {
+    color: #ffffff;
+}
+
+#pulseaudio.muted {
+    color: #888888;
+}
+
+#pulseaudio:hover {
+    color: #1b9fc6;
+}
+
+#battery {
+    color: #ffffff;
+}
+
+#battery.charging {
+    color: #1b9fc6;
+}
+
+#battery.warning:not(.charging) {
+    color: #f0c674;
+}
+
+#battery.critical:not(.charging) {
+    color: #bd2c40;
+    animation: blink 1s linear infinite;
+}
+
+@keyframes blink {
+    to {
+        color: #ffffff;
+    }
+}
+
+#memory {
+    color: #ffffff;
+}
+
+#cpu {
+    color: #ffffff;
+}
+
+#network {
+    color: #ffffff;
+}
+
+#network.disconnected {
+    color: #888888;
+}
+
+#disk {
+    color: #ffffff;
+}
+
+#custom-power {
+    color: #bd2c40;
+    padding: 0 10px;
+}
+
+#custom-power:hover {
+    color: #ff3c5c;
+}
+
+#clock {
+    color: #1b9fc6;
+    font-weight: bold;
+}
+
+/* ---- Separators between right modules ---- */
+
+#custom-pacman,
+#temperature,
+#custom-spotify,
+#pulseaudio,
+#battery,
+#memory,
+#cpu,
+#network,
+#disk,
+#custom-power,
+#clock {
+    border-left: 1px solid rgba(27, 159, 198, 0.4);
+}
+
+/* ---- Hover effects for clickable modules ---- */
+
+#custom-pacman:hover,
+#custom-spotify:hover,
+#network:hover,
+#disk:hover,
+#clock:hover {
+    background: rgba(27, 159, 198, 0.15);
+}
+
+/* ---- Tooltip styling ---- */
+
+tooltip {
+    background: rgba(30, 30, 30, 0.95);
+    border: 1px solid #1b9fc6;
+    border-radius: 4px;
+    color: #ffffff;
+}
+
+tooltip label {
+    color: #ffffff;
+    padding: 4px;
+}

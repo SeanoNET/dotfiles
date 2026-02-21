@@ -112,24 +112,24 @@ echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 
 OFFICIAL_PACKAGES=(
-    # WM / Display
-    "i3-wm"
-    "polybar"
-    "picom"
-    "rofi"
+    # Wayland / Sway
+    "sway"
+    "waybar"
+    "swaylock"
+    "swayidle"
+    "swaybg"
+    "grim"
+    "slurp"
+    "wl-clipboard"
+    "brightnessctl"
+    "wlr-randr"
+    "xdg-desktop-portal-wlr"
+    "xwayland"
     "dunst"
-    "xss-lock"
-    "i3lock"
     "dex"
-    "feh"
-    "flameshot"
-    "scrot"
     "imagemagick"
-    "xorg-setxkbmap"
-    "xorg-xbacklight"
     "polkit-gnome"
     "nautilus"
-    "xscreensaver"
 
     # Terminals
     "alacritty"
@@ -172,8 +172,6 @@ OFFICIAL_PACKAGES=(
     "qt6ct"
 
     # Utilities
-    "arandr"
-    "xclip"
     "jq"
     "fd"
     "btop"
@@ -332,15 +330,13 @@ STOW_PACKAGES=(
     ghostty
     git
     helix
-    i3
     lazygit
-    picom
-    polybar
-    rofi
     starship
+    sway
+    swaylock
     tmux
     vscode
-    xprofile
+    waybar
     yazi
     zed
     zsh

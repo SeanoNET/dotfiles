@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+PICTURE=/tmp/swaylock.png
+grim $PICTURE
+magick $PICTURE -blur 5x4 $PICTURE
+swaylock -i $PICTURE
+rm $PICTURE
