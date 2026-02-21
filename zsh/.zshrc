@@ -295,12 +295,8 @@ if [[ $- == *i* ]]; then
   echo "💡 Tip: Type 'cheat' to view terminal shortcuts (or Ctrl+Space+? in tmux)"
 fi
 
-export PATH="/home/seano/.npm-global/bin:$PATH"
-
-. "$HOME/.local/bin/env"
-export PATH="$HOME/.local/bin:$PATH"
-export PATH="$HOME/.local/bin:$PATH"
-export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/.npm-global/bin:$HOME/.local/bin:$PATH"
+[ -f "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"
 
 export ANDROID_HOME=$HOME/Android/Sdk
 export ANDROID_SDK_ROOT=$HOME/Android/Sdk
