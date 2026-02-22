@@ -1,7 +1,7 @@
 #!/bin/bash
 # Full bootstrap for Arch/EndeavourOS - from zero to working desktop
 # One-liner for fresh machine:
-#   bash <(curl -s https://raw.githubusercontent.com/SeanoNET/dotfiles/main/bootstrap-packages.sh)
+#   curl -s https://raw.githubusercontent.com/SeanoNET/dotfiles/wayland/bootstrap-packages.sh | bash
 
 set -euo pipefail
 
@@ -28,18 +28,24 @@ if [[ $EUID -eq 0 ]]; then
 fi
 
 # ── Auto-clone logic ─────────────────────────────────────────────────
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILES_DIR="$HOME/dotfiles"
+DOTFILES_BRANCH="wayland"
+SCRIPT_DIR=""
 
-if [[ -d "$SCRIPT_DIR/.git" && -d "$SCRIPT_DIR/zsh" ]]; then
+# BASH_SOURCE is empty when piped via curl | bash
+if [[ -n "${BASH_SOURCE[0]:-}" && "${BASH_SOURCE[0]}" != "bash" ]]; then
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+fi
+
+if [[ -n "$SCRIPT_DIR" && -d "$SCRIPT_DIR/.git" && -d "$SCRIPT_DIR/zsh" ]]; then
     DOTFILES_DIR="$SCRIPT_DIR"
     echo -e "${GREEN}✓${NC} Running from dotfiles repo: $DOTFILES_DIR"
 elif [[ -d "$DOTFILES_DIR/.git" && -d "$DOTFILES_DIR/zsh" ]]; then
     echo -e "${GREEN}✓${NC} Found existing dotfiles at $DOTFILES_DIR"
 else
-    echo -e "${YELLOW}→${NC} Cloning dotfiles to $DOTFILES_DIR..."
+    echo -e "${YELLOW}→${NC} Cloning dotfiles ($DOTFILES_BRANCH branch) to $DOTFILES_DIR..."
     sudo pacman -S --needed --noconfirm git
-    git clone https://github.com/SeanoNET/dotfiles.git "$DOTFILES_DIR"
+    git clone -b "$DOTFILES_BRANCH" https://github.com/SeanoNET/dotfiles.git "$DOTFILES_DIR"
     echo -e "${GREEN}✓${NC} Dotfiles cloned"
     echo -e "${YELLOW}→${NC} Re-executing from cloned repo..."
     exec bash "$DOTFILES_DIR/bootstrap-packages.sh"
