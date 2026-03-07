@@ -140,9 +140,11 @@ OFFICIAL_PACKAGES=(
     "imagemagick"
     "polkit-gnome"
     "nautilus"
+    "cliphist"
+    "gnome-keyring"
+    "chromium"
 
-    # Terminals
-    "alacritty"
+    # Terminal
     "tmux"
 
     # Shell
@@ -187,11 +189,16 @@ OFFICIAL_PACKAGES=(
     "btop"
     "unzip"
 
-    # Networking / Audio
+    # Audio (PipeWire stack)
+    "pipewire"
+    "pipewire-pulse"
+    "pipewire-audio"
+    "wireplumber"
+    "wiremix"
+
+    # Networking
     "networkmanager"
     "nm-connection-editor"
-    "wireplumber"
-    "pavucontrol"
 
     # Editors
     "code"
@@ -303,17 +310,6 @@ else
     echo -e "${GREEN}✓${NC} nvm installed"
 fi
 
-# tpm (tmux plugin manager)
-TPM_DIR="$HOME/.config/tmux/plugins/tpm"
-if [[ -d "$TPM_DIR" ]]; then
-    echo -e "${GREEN}✓${NC} tpm already installed"
-else
-    echo -e "${YELLOW}→${NC} Installing tpm..."
-    mkdir -p "$(dirname "$TPM_DIR")"
-    git clone https://github.com/tmux-plugins/tpm "$TPM_DIR"
-    echo -e "${GREEN}✓${NC} tpm installed"
-fi
-
 # claude code
 if command -v claude &>/dev/null; then
     echo -e "${GREEN}✓${NC} claude code already installed"
@@ -334,8 +330,8 @@ echo ""
 BACKUP_DIR="$HOME/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)"
 
 STOW_PACKAGES=(
-    alacritty
     background
+    chromium
     ghostty
     git
     helix
@@ -465,7 +461,16 @@ else
     echo -e "${GREEN}✓${NC} Default shell changed to zsh"
 fi
 
-# tmux plugins (headless install)
+# tpm + tmux plugins (must run after stow so configs are in place)
+TPM_DIR="$HOME/.config/tmux/plugins/tpm"
+if [[ -d "$TPM_DIR" ]]; then
+    echo -e "${GREEN}✓${NC} tpm already installed"
+else
+    echo -e "${YELLOW}→${NC} Installing tpm..."
+    mkdir -p "$(dirname "$TPM_DIR")"
+    git clone https://github.com/tmux-plugins/tpm "$TPM_DIR"
+    echo -e "${GREEN}✓${NC} tpm installed"
+fi
 if [[ -x "$TPM_DIR/bin/install_plugins" ]]; then
     echo -e "${YELLOW}→${NC} Installing tmux plugins..."
     "$TPM_DIR/bin/install_plugins" || true

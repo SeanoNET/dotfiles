@@ -1,0 +1,154 @@
+#!/usr/bin/env bash
+# Unified web app manager for Sway + Chromium --app mode.
+# Usage: webapp <command> [args...]
+#
+# Commands:
+#   install "App Name" "https://url.com"  Create .desktop file + fetch icon
+#   launch  "https://url.com"             Launch or focus existing window
+#   list                                   Show installed web apps
+#   remove  "App Name"                    Remove .desktop file + icon
+
+set -euo pipefail
+
+WEBAPP_DIR="$HOME/.local/share/applications"
+ICON_DIR="$HOME/.local/share/icons/webapps"
+DESKTOP_PREFIX="webapp-"
+
+# ── Helpers ──────────────────────────────────────────────────────────
+
+url_to_domain() {
+    echo "$1" | sed -E 's|https?://||; s|/.*||'
+}
+
+name_to_id() {
+    echo "$1" | tr '[:upper:] ' '[:lower:]-' | sed 's/[^a-z0-9-]//g'
+}
+
+# ── install ──────────────────────────────────────────────────────────
+
+cmd_install() {
+    local name="$1"
+    local url="$2"
+    local safe_name domain desktop_file icon_path icon_value
+
+    safe_name=$(name_to_id "$name")
+    domain=$(url_to_domain "$url")
+    desktop_file="${WEBAPP_DIR}/${DESKTOP_PREFIX}${safe_name}.desktop"
+    icon_path="${ICON_DIR}/${domain}.png"
+
+    # Fetch favicon from Google's service (128px)
+    mkdir -p "$ICON_DIR"
+    if [[ ! -f "$icon_path" ]]; then
+        curl -sL "https://www.google.com/s2/favicons?domain=${domain}&sz=128" \
+            -o "$icon_path" 2>/dev/null || true
+        if ! file "$icon_path" 2>/dev/null | grep -qi 'image'; then
+            rm -f "$icon_path"
+        fi
+    fi
+
+    icon_value="chromium"
+    [[ -f "$icon_path" ]] && icon_value="$icon_path"
+
+    mkdir -p "$WEBAPP_DIR"
+    cat > "$desktop_file" << EOF
+[Desktop Entry]
+Name=${name}
+Exec=$HOME/.config/sway/scripts/webapp launch ${url}
+Icon=${icon_value}
+Type=Application
+Categories=Network;WebApp;
+Comment=Web app: ${url}
+EOF
+
+    echo "Installed: $name ($url)"
+    echo "  Desktop file: $desktop_file"
+    [[ -f "$icon_path" ]] && echo "  Icon: $icon_path"
+}
+
+# ── launch ───────────────────────────────────────────────────────────
+
+cmd_launch() {
+    local url="$1"
+    local domain
+    domain=$(url_to_domain "$url")
+
+    # Chromium --app sets app_id to "chrome-DOMAIN__-Default", so match by app_id or title
+    local window_id
+    window_id=$(swaymsg -t get_tree | jq -r \
+        --arg domain "$domain" \
+        '.. | select(.app_id? // "" | test("chrome.*" + $domain; "i"))
+             | .id' 2>/dev/null | head -1)
+
+    if [[ -n "$window_id" ]]; then
+        swaymsg "[con_id=${window_id}] focus"
+    else
+        setsid chromium --app="$url" &>/dev/null &
+    fi
+}
+
+# ── list ─────────────────────────────────────────────────────────────
+
+cmd_list() {
+    local found=0
+    for f in "${WEBAPP_DIR}/${DESKTOP_PREFIX}"*.desktop; do
+        [[ -f "$f" ]] || continue
+        local name url
+        name=$(grep '^Name=' "$f" | cut -d= -f2-)
+        url=$(grep '^Comment=' "$f" | sed 's/^Comment=Web app: //')
+        printf "  %-20s %s\n" "$name" "$url"
+        found=1
+    done
+    [[ $found -eq 0 ]] && echo "No web apps installed."
+}
+
+# ── remove ───────────────────────────────────────────────────────────
+
+cmd_remove() {
+    local name="$1"
+    local safe_name desktop_file
+    safe_name=$(name_to_id "$name")
+    desktop_file="${WEBAPP_DIR}/${DESKTOP_PREFIX}${safe_name}.desktop"
+
+    if [[ -f "$desktop_file" ]]; then
+        local domain
+        domain=$(grep '^Comment=' "$desktop_file" | sed 's|^Comment=Web app: ||; s|https\?://||; s|/.*||')
+        rm -f "${ICON_DIR}/${domain}.png"
+        rm -f "$desktop_file"
+        echo "Removed: $name"
+    else
+        echo "Web app not found: $name"
+        echo "Installed apps:"
+        cmd_list
+        exit 1
+    fi
+}
+
+# ── Main ─────────────────────────────────────────────────────────────
+
+case "${1:-}" in
+    install)
+        [[ $# -lt 3 ]] && { echo "Usage: webapp install \"App Name\" \"https://url.com\""; exit 1; }
+        cmd_install "$2" "$3"
+        ;;
+    launch)
+        [[ $# -lt 2 ]] && { echo "Usage: webapp launch \"https://url.com\""; exit 1; }
+        cmd_launch "$2"
+        ;;
+    list)
+        cmd_list
+        ;;
+    remove)
+        [[ $# -lt 2 ]] && { echo "Usage: webapp remove \"App Name\""; exit 1; }
+        cmd_remove "$2"
+        ;;
+    *)
+        echo "Usage: webapp <install|launch|list|remove> [args...]"
+        echo ""
+        echo "Commands:"
+        echo "  install \"App Name\" \"https://url.com\"  Create .desktop file + fetch icon"
+        echo "  launch  \"https://url.com\"              Launch or focus existing window"
+        echo "  list                                      Show installed web apps"
+        echo "  remove  \"App Name\"                     Remove .desktop file + icon"
+        exit 1
+        ;;
+esac

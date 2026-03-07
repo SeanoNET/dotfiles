@@ -1,10 +1,36 @@
+// Waybar config — Dracula floating bar with grouped modules
+// Modules auto-hide when hardware is absent (battery, wifi, ethernet, bluetooth)
 {
     "layer": "top",
     "position": "top",
-    "height": 28,
+    "height": 36,
+    "margin-top": 6,
+    "margin-left": 8,
+    "margin-right": 8,
     "modules-left": ["sway/workspaces", "sway/mode"],
     "modules-center": ["sway/window"],
-    "modules-right": ["tray", "custom/pacman", "temperature", "custom/spotify", "pulseaudio", "battery", "memory", "cpu", "network", "disk", "custom/power", "clock"],
+    "modules-right": [
+        "tray",
+        "custom/spotify",
+        "custom/sep",
+        "custom/pacman",
+        "temperature",
+        "cpu",
+        "memory",
+        "disk",
+        "custom/sep",
+        "pulseaudio",
+        "bluetooth",
+        "network#wifi",
+        "network#ethernet",
+        "battery",
+        "custom/sep",
+        "clock",
+        "custom/power"
+    ],
+
+    // ---- Left ----
+
     "sway/workspaces": {
         "disable-scroll": true,
         "format": "{name}"
@@ -12,76 +38,138 @@
     "sway/mode": {
         "format": " {mode}"
     },
+
+    // ---- Center ----
+
     "sway/window": {
         "max-length": 60
     },
-    "clock": {
-        "format": "{:%H:%M}",
-        "format-alt": "{:%d-%m-%Y %H:%M:%S}",
-        "interval": 1,
-        "tooltip-format": "{:%A, %B %d, %Y}"
+
+    // ---- Separators ----
+
+    "custom/sep": {
+        "format": "│",
+        "tooltip": false
     },
-    "cpu": {
-        "format": " {usage}%",
+
+    // ---- Right ----
+
+    "tray": {
+        "spacing": 8
+    },
+
+    // Media — works with any MPRIS player (spotify_player, etc.)
+    // Left-click: play/pause, Right-click: open spotify TUI, Scroll: next/prev
+    "custom/spotify": {
+        "format": " {}",
+        "max-length": 40,
+        "exec": "playerctl metadata --format '{{artist}} - {{title}}' 2>/dev/null",
+        "exec-if": "playerctl status 2>/dev/null",
         "interval": 2,
-        "tooltip": true
+        "on-click": "playerctl play-pause",
+        "on-click-right": "~/.config/sway/scripts/popup-tui.sh spotify_player",
+        "on-scroll-up": "playerctl next",
+        "on-scroll-down": "playerctl previous",
+        "escape": true
     },
-    "memory": {
-        "format": " {used:0.1f}G",
-        "interval": 2,
-        "tooltip-format": "{used:0.1f}G / {total:0.1f}G"
+
+    // Only visible when updates are available
+    "custom/pacman": {
+        "format": " {}",
+        "exec": "count=$(checkupdates 2>/dev/null | wc -l); [ \"$count\" -gt 0 ] && echo \"$count\"",
+        "interval": 3600,
+        "signal": 8
     },
+
     "temperature": {
         "critical-threshold": 60,
-        "format": "{icon} {temperatureC}°C",
-        "format-icons": ["", "", ""]
+        "format": " {temperatureC}°C",
+        "format-critical": " {temperatureC}°C",
+        "format-icons": ["", "", ""]
     },
+
+    // Left-click: open wiremix TUI
+    "pulseaudio": {
+        "format": " {volume}%",
+        "format-muted": " muted",
+        "on-click": "~/.config/sway/scripts/popup-tui.sh wiremix",
+        "on-click-right": "pamixer -t",
+        "scroll-step": 5
+    },
+
+    // Hidden when no bluetooth controller exists
+    "bluetooth": {
+        "format": "",
+        "format-connected": " {num_connections}",
+        "format-disabled": "",
+        "on-click": "~/.config/sway/scripts/popup-tui.sh bluetuith",
+        "tooltip-format": "{controller_alias}\n{status}",
+        "tooltip-format-connected": "{controller_alias}\n{num_connections} connected\n\n{device_enumerate}",
+        "tooltip-format-enumerate-connected": "{device_alias}"
+    },
+
+    // Wifi — auto-hides on desktop (no wl* interface)
+    "network#wifi": {
+        "interface": "wl*",
+        "format-wifi": " {essid}",
+        "format-disconnected": "",
+        "on-click": "~/.config/sway/scripts/popup-tui.sh nmtui",
+        "tooltip-format": "{ifname}: {ipaddr}/{cidr}"
+    },
+
+    // Ethernet — auto-hides on laptop (no en* interface)
+    "network#ethernet": {
+        "interface": "en*",
+        "format-ethernet": "󰈀",
+        "format-disconnected": "",
+        "on-click": "~/.config/sway/scripts/popup-tui.sh nmtui",
+        "tooltip-format": "{ifname}: {ipaddr}/{cidr}"
+    },
+
+    // Battery — waybar auto-hides when no BAT* exists in /sys
     "battery": {
         "states": {
             "warning": 20,
             "critical": 5
         },
         "format": "{icon} {capacity}%",
-        "format-charging": " {capacity}%",
-        "format-plugged": " {capacity}%",
-        "format-icons": ["", "", "", "", ""]
+        "format-charging": " {capacity}%",
+        "format-plugged": " {capacity}%",
+        "format-icons": ["", "", "", "", ""]
     },
-    "network": {
-        "interface": "wl*",
-        "format-wifi": " {essid}",
-        "format-disconnected": " disconnected",
-        "tooltip-format": "{ifname}: {ipaddr}/{cidr}"
-    },
-    "pulseaudio": {
-        "format": " {volume}%",
-        "format-muted": " muted",
-        "on-click": "pavucontrol",
-        "scroll-step": 5
-    },
+
     "disk": {
-        "format": " {free}",
+        "format": "󰋊 {free}",
         "path": "/"
     },
-    "tray": {
-        "spacing": 8
+
+    // Left-click: open btop
+    "memory": {
+        "format": " {used:0.1f} GB",
+        "interval": 2,
+        "on-click": "~/.config/sway/scripts/popup-tui.sh btop",
+        "tooltip-format": "{used:0.1f}G / {total:0.1f}G"
     },
-    "custom/pacman": {
-        "format": " {}",
-        "exec": "checkupdates | wc -l",
-        "interval": 1000,
-        "signal": 8
+
+    // Left-click: open btop
+    "cpu": {
+        "format": " {usage}%",
+        "interval": 2,
+        "on-click": "~/.config/sway/scripts/popup-tui.sh btop",
+        "tooltip": true
     },
-    "custom/spotify": {
-        "format": " {}",
-        "exec": "playerctl -p spotify metadata --format '{{artist}} - {{title}}'",
-        "exec-if": "playerctl -p spotify status 2>/dev/null",
+
+    "clock": {
+        "format": " {:%H:%M}",
+        "format-alt": " {:%a %d %b  %H:%M:%S}",
         "interval": 1,
-        "on-click": "playerctl -p spotify play-pause",
-        "escape": true
+        "tooltip-format": "<big>{:%B %Y}</big>\n{calendar}"
     },
+
+    // Power menu
     "custom/power": {
-        "format": "",
-        "on-click": "~/.config/sway/scripts/power-profiles",
-        "tooltip": false
+        "format": "⏻",
+        "tooltip": false,
+        "on-click": "swaynag -t warning -m 'Power Menu' -B '󰐥 Shutdown' 'systemctl poweroff' -B ' Reboot' 'systemctl reboot' -B ' Lock' 'swaylock' -B '󰍃 Logout' 'swaymsg exit'"
     }
 }
