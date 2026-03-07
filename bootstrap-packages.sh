@@ -479,6 +479,15 @@ else
     echo -e "${YELLOW}⚠${NC} tpm install_plugins not found, skip tmux plugin install"
 fi
 
+# ── Web Apps ────────────────────────────────────────────────────────
+
+WEBAPP_SCRIPT="$HOME/.config/sway/scripts/webapp"
+if [[ -x "$WEBAPP_SCRIPT" ]]; then
+    echo -e "${YELLOW}→${NC} Installing web apps..."
+    "$WEBAPP_SCRIPT" install "Oak Hill Software" "https://oakhillsoftware.app"
+    echo -e "${GREEN}✓${NC} Web apps installed"
+fi
+
 # ── Summary ─────────────────────────────────────────────────────────
 
 echo ""

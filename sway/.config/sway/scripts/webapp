@@ -60,6 +60,10 @@ Categories=Network;WebApp;
 Comment=Web app: ${url}
 EOF
 
+    # Refresh app launcher
+    update-desktop-database "$WEBAPP_DIR" 2>/dev/null || true
+    command -v vicinae &>/dev/null && vicinae server --replace &>/dev/null &
+
     echo "Installed: $name ($url)"
     echo "  Desktop file: $desktop_file"
     [[ -f "$icon_path" ]] && echo "  Icon: $icon_path"
@@ -114,6 +118,11 @@ cmd_remove() {
         domain=$(grep '^Comment=' "$desktop_file" | sed 's|^Comment=Web app: ||; s|https\?://||; s|/.*||')
         rm -f "${ICON_DIR}/${domain}.png"
         rm -f "$desktop_file"
+
+        # Refresh app launcher
+        update-desktop-database "$WEBAPP_DIR" 2>/dev/null || true
+        command -v vicinae &>/dev/null && vicinae server --replace &>/dev/null &
+
         echo "Removed: $name"
     else
         echo "Web app not found: $name"
