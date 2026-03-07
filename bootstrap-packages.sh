@@ -48,7 +48,7 @@ else
     git clone -b "$DOTFILES_BRANCH" https://github.com/SeanoNET/dotfiles.git "$DOTFILES_DIR"
     echo -e "${GREEN}✓${NC} Dotfiles cloned"
     echo -e "${YELLOW}→${NC} Re-executing from cloned repo..."
-    exec bash "$DOTFILES_DIR/bootstrap-packages.sh"
+    exec bash "$DOTFILES_DIR/bootstrap-packages.sh" </dev/tty
 fi
 
 # ── Helper functions ─────────────────────────────────────────────────
@@ -213,6 +213,9 @@ OFFICIAL_PACKAGES=(
     "ghostty"
     "scrcpy"
 
+    # Login manager
+    "greetd"
+
     # Flatpak (installed here so the flatpak section can use it)
     "flatpak"
 )
@@ -233,6 +236,7 @@ AUR_PACKAGES=(
     "1password-beta"
     "bluetuith"
     "bambustudio-bin"
+    "greetd-tuigreet"
     "opencode-bin"
     "vicinae-bin"
     "zen-browser-bin"
@@ -332,6 +336,7 @@ BACKUP_DIR="$HOME/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)"
 STOW_PACKAGES=(
     background
     chromium
+    dunst
     ghostty
     git
     helix
@@ -418,11 +423,30 @@ if [[ -f "$HOME/.ssh/id_ed25519" ]]; then
     echo -e "${GREEN}✓${NC} SSH key already exists"
 else
     echo -e "${YELLOW}→${NC} Generating SSH key..."
-    ssh-keygen -t ed25519 -f "$HOME/.ssh/id_ed25519" -C "$USER@$(hostname)"
+    ssh-keygen -t ed25519 -f "$HOME/.ssh/id_ed25519" -C "$USER@$(hostname)" </dev/tty
     echo -e "${GREEN}✓${NC} SSH key generated"
     echo -e "${YELLOW}⚠${NC}  Public key:"
     cat "$HOME/.ssh/id_ed25519.pub"
     echo ""
+fi
+
+# greetd login manager
+if systemctl is-enabled greetd &>/dev/null; then
+    echo -e "${GREEN}✓${NC} greetd service already enabled"
+else
+    echo -e "${YELLOW}→${NC} Enabling greetd service..."
+    # Configure greetd to use tuigreet with sway
+    sudo mkdir -p /etc/greetd
+    sudo tee /etc/greetd/config.toml > /dev/null <<'GREETD_EOF'
+[terminal]
+vt = 1
+
+[default_session]
+command = "tuigreet --time --remember --cmd sway"
+user = "greeter"
+GREETD_EOF
+    sudo systemctl enable greetd
+    echo -e "${GREEN}✓${NC} greetd service enabled (will start on next boot)"
 fi
 
 # Docker service
@@ -457,7 +481,7 @@ if [[ "$SHELL" == *"zsh"* ]]; then
     echo -e "${GREEN}✓${NC} Default shell is already zsh"
 else
     echo -e "${YELLOW}→${NC} Changing default shell to zsh..."
-    chsh -s "$(which zsh)"
+    sudo chsh -s "$(which zsh)" "$USER"
     echo -e "${GREEN}✓${NC} Default shell changed to zsh"
 fi
 
