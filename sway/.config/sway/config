@@ -126,7 +126,8 @@ gaps outer 2
 floating_modifier $mod normal
 
 # Layout toggle
-bindsym $mod+e layout toggle splith splitv tabbed stacking
+# Open editor (workspace 1)
+bindsym $mod+e exec ~/.config/sway/scripts/launch-or-open.sh dev.zed.Zed 1 zeditor
 
 # Scratchpad (app_id for Wayland-native, class for XWayland)
 for_window [app_id="scratchpad-term"] floating enable
@@ -171,8 +172,8 @@ bindsym $mod+Shift+0 move container to workspace number 10
 # keybindings for different actions: #
 ######################################
 
-# Start a terminal with tmux
-bindsym $mod+Return exec ghostty -e ~/.config/sway/scripts/tmux-launcher.sh
+# Start a terminal with tmux (workspace 1)
+bindsym $mod+Return exec ~/.config/sway/scripts/launch-or-open.sh com.mitchellh.ghostty 1 ghostty -e ~/.config/sway/scripts/tmux-launcher.sh
 
 # Jump to tablet control via scrcpy
 bindsym $mod+t [class="scrcpy"] focus
@@ -272,9 +273,9 @@ bindsym XF86AudioPlay exec playerctl play-pause
 bindsym XF86AudioNext exec playerctl next
 bindsym XF86AudioPrev exec playerctl previous
 
-# App shortcuts
-bindsym $mod+w exec /usr/bin/$browser
-bindsym $mod+n exec /usr/bin/$files
+# App shortcuts (launch-or-open: first instance → target workspace, subsequent → current)
+bindsym $mod+w exec ~/.config/sway/scripts/launch-or-open.sh zen 2 /usr/bin/$browser
+bindsym $mod+n exec ~/.config/sway/scripts/launch-or-open.sh org.gnome.Nautilus 3 /usr/bin/$files
 bindsym $mod+m exec ~/.config/sway/scripts/popup-tui.sh --size 1400x800 $music
 
 # Power Profiles menu switcher (rofi)
@@ -287,8 +288,8 @@ bindsym $mod+d exec vicinae toggle
 # configuration for workspace behaviour: #
 ##########################################
 
-# Workspaces are created on demand — just switch to any number 1-10.
-# No apps are pinned to specific workspaces; open anything anywhere.
+# Workspace assignments — apps without keybindings always land here
+assign [app_id="thunderbird"] workspace number 3
 
 ##################
 # floating rules #

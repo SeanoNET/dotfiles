@@ -212,6 +212,7 @@ OFFICIAL_PACKAGES=(
     "autotiling"
     "ghostty"
     "scrcpy"
+    "thunderbird"
 
     # Login manager
     "ly"
