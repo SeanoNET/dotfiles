@@ -430,9 +430,18 @@ else
     echo ""
 fi
 
-# ly display manager
+# ly display manager — disable any competing DM first
+for dm in gdm sddm lightdm lxdm; do
+    if systemctl is-enabled "$dm" &>/dev/null; then
+        echo -e "${YELLOW}→${NC} Disabling $dm (replacing with ly)..."
+        sudo systemctl disable "$dm"
+        echo -e "${GREEN}✓${NC} $dm disabled"
+    fi
+done
+
 if [[ -f "$DOTFILES_DIR/ly/config.ini" ]]; then
     echo -e "${YELLOW}→${NC} Installing ly config..."
+    sudo mkdir -p /etc/ly
     sudo cp "$DOTFILES_DIR/ly/config.ini" /etc/ly/config.ini
     echo -e "${GREEN}✓${NC} ly config installed"
 fi
@@ -490,13 +499,31 @@ else
     git clone https://github.com/tmux-plugins/tpm "$TPM_DIR"
     echo -e "${GREEN}✓${NC} tpm installed"
 fi
-if [[ -x "$TPM_DIR/bin/install_plugins" ]]; then
-    echo -e "${YELLOW}→${NC} Installing tmux plugins..."
-    "$TPM_DIR/bin/install_plugins" || true
-    echo -e "${GREEN}✓${NC} tmux plugins installed"
-else
-    echo -e "${YELLOW}⚠${NC} tpm install_plugins not found, skip tmux plugin install"
-fi
+# Install tmux plugins by cloning directly — TPM's install_plugins
+# requires a tmux server to resolve the plugin path, which may not
+# work on a fresh machine before tmux has ever run.
+TMUX_PLUGIN_DIR="$HOME/.config/tmux/plugins"
+TMUX_PLUGINS=(
+    "tmux-plugins/tmux-sensible"
+    "janoamaral/tokyo-night-tmux"
+    "tmux-plugins/tmux-resurrect"
+    "lost-melody/tmux-command-palette"
+    "jabirali/tmux-tilish"
+    "jaclu/tmux-menus"
+    "sainnhe/tmux-fzf"
+)
+for plugin in "${TMUX_PLUGINS[@]}"; do
+    plugin_name="$(basename "$plugin")"
+    plugin_path="$TMUX_PLUGIN_DIR/$plugin_name"
+    if [[ -d "$plugin_path" ]]; then
+        echo -e "${GREEN}✓${NC} tmux plugin $plugin_name already installed"
+    else
+        echo -e "${YELLOW}→${NC} Installing tmux plugin $plugin_name..."
+        git clone --single-branch --recursive "https://github.com/$plugin" "$plugin_path" >/dev/null 2>&1 \
+            && echo -e "${GREEN}✓${NC} $plugin_name installed" \
+            || echo -e "${RED}✗${NC} $plugin_name failed to install"
+    fi
+done
 
 # ── Web Apps ────────────────────────────────────────────────────────
 
