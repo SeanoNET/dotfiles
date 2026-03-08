@@ -1,6 +1,6 @@
 {
     "editor.fontFamily": "JetBrainsMono Nerd Font",
-    "workbench.sideBar.location": "right",
+    "workbench.sideBar.location": "left",
     "workbench.iconTheme": "vscode-jetbrains-icon-theme-2023-auto",
     "workbench.colorTheme": "Tokyo Night Storm",
     "chat.instructionsFilesLocations": {
@@ -12,15 +12,6 @@
         "/tmp/postman-http-request-post-response.instructions.md": true,
         "/tmp/postman-http-request-pre-request.instructions.md": true
     },
-    "roo-cline.allowedCommands": [
-        "npm test",
-        "npm install",
-        "tsc",
-        "git log",
-        "git diff",
-        "git show"
-    ],
-    "roo-cline.deniedCommands": [],
     "git.enableSmartCommit": true,
     "svelte.enable-ts-plugin": true,
     "vim.easymotion": true,
