@@ -6,6 +6,12 @@ done
 
 WALLPAPER_DIR="$HOME/.config/backdrops"
 
+if [ ! -d "$WALLPAPER_DIR" ] || [ -z "$(find -L "$WALLPAPER_DIR" -type f -print -quit 2>/dev/null)" ]; then
+    echo "wallpaper.sh: no wallpapers in $WALLPAPER_DIR" >&2
+    swaybg -c '#24283b' &
+    exit 0
+fi
+
 while true; do
     WALLPAPER=$(find -L "$WALLPAPER_DIR" -type f | shuf -n 1)
     killall swaybg 2>/dev/null

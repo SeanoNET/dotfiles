@@ -125,7 +125,6 @@ OFFICIAL_PACKAGES=(
     # Wayland / Sway
     "sway"
     "waybar"
-    "swaylock-effects"
     "swayidle"
     "swaybg"
     "grim"
@@ -213,7 +212,6 @@ OFFICIAL_PACKAGES=(
     "autotiling"
     "ghostty"
     "scrcpy"
-    "localsend"
 
     # Login manager
     "ly"
@@ -238,7 +236,9 @@ AUR_PACKAGES=(
     "1password-beta"
     "bluetuith"
     "bambustudio-bin"
+    "localsend-bin"
     "opencode-bin"
+    "swaylock-effects"
     "vicinae-bin"
     "zen-browser-bin"
 )
