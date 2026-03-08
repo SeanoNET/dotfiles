@@ -15,4 +15,4 @@ configuration{
     font: "JetBrains Mono";
 }
 
-@theme "/home/seano/.local/share/rofi/themes/spotlight-dark.rasi"
+@theme "/home/seano/.local/share/rofi/themes/spotlight-tokyonight.rasi"

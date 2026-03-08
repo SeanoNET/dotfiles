@@ -125,7 +125,7 @@ OFFICIAL_PACKAGES=(
     # Wayland / Sway
     "sway"
     "waybar"
-    "swaylock"
+    "swaylock-effects"
     "swayidle"
     "swaybg"
     "grim"
@@ -134,6 +134,7 @@ OFFICIAL_PACKAGES=(
     "brightnessctl"
     "wlr-randr"
     "xdg-desktop-portal-wlr"
+    "xdg-desktop-portal-gtk"
     "xorg-xwayland"
     "dunst"
     "dex"
@@ -212,9 +213,10 @@ OFFICIAL_PACKAGES=(
     "autotiling"
     "ghostty"
     "scrcpy"
+    "localsend"
 
     # Login manager
-    "greetd"
+    "ly"
 
     # Flatpak (installed here so the flatpak section can use it)
     "flatpak"
@@ -236,7 +238,6 @@ AUR_PACKAGES=(
     "1password-beta"
     "bluetuith"
     "bambustudio-bin"
-    "greetd-tuigreet"
     "opencode-bin"
     "vicinae-bin"
     "zen-browser-bin"
@@ -378,27 +379,26 @@ for pkg in "${STOW_PACKAGES[@]}"; do
     fi
 done
 
-# ── Rofi Theme ──────────────────────────────────────────────────────
+# ── Theme Setup ─────────────────────────────────────────────────────
 
 echo ""
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BLUE}    Rofi Theme${NC}"
+echo -e "${BLUE}    Theme Setup (Tokyo Night Storm)${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
-ROFI_THEME_DIR="$HOME/.local/share/rofi/themes"
-ROFI_THEME_FILE="$ROFI_THEME_DIR/spotlight-dark.rasi"
+# VS Code Tokyo Night extension
+if command -v code &>/dev/null; then
+    echo -e "${YELLOW}→${NC} Installing VS Code Tokyo Night extension..."
+    code --install-extension enkia.tokyo-night || true
+    echo -e "${GREEN}✓${NC} VS Code Tokyo Night extension installed"
+fi
 
-if [[ -f "$ROFI_THEME_FILE" ]]; then
-    echo -e "${GREEN}✓${NC} Rofi spotlight-dark theme already installed"
-else
-    echo -e "${YELLOW}→${NC} Installing rofi spotlight-dark theme..."
-    mkdir -p "$ROFI_THEME_DIR"
-    TMPDIR=$(mktemp -d)
-    git clone --depth 1 https://github.com/newmanls/rofi-themes-collection.git "$TMPDIR"
-    cp "$TMPDIR/themes/spotlight-dark.rasi" "$ROFI_THEME_FILE"
-    rm -rf "$TMPDIR"
-    echo -e "${GREEN}✓${NC} Rofi theme installed"
+# Yazi Tokyo Night flavor
+if command -v ya &>/dev/null; then
+    echo -e "${YELLOW}→${NC} Installing Yazi Tokyo Night flavor..."
+    ya pkg add BennyOe/tokyo-night || true
+    echo -e "${GREEN}✓${NC} Yazi Tokyo Night flavor installed"
 fi
 
 # ── Post-Installation Configuration ─────────────────────────────────
@@ -430,23 +430,18 @@ else
     echo ""
 fi
 
-# greetd login manager
-if systemctl is-enabled greetd &>/dev/null; then
-    echo -e "${GREEN}✓${NC} greetd service already enabled"
+# ly display manager
+if [[ -f "$DOTFILES_DIR/ly/config.ini" ]]; then
+    echo -e "${YELLOW}→${NC} Installing ly config..."
+    sudo cp "$DOTFILES_DIR/ly/config.ini" /etc/ly/config.ini
+    echo -e "${GREEN}✓${NC} ly config installed"
+fi
+if systemctl is-enabled ly@tty1 &>/dev/null; then
+    echo -e "${GREEN}✓${NC} ly service already enabled"
 else
-    echo -e "${YELLOW}→${NC} Enabling greetd service..."
-    # Configure greetd to use tuigreet with sway
-    sudo mkdir -p /etc/greetd
-    sudo tee /etc/greetd/config.toml > /dev/null <<'GREETD_EOF'
-[terminal]
-vt = 1
-
-[default_session]
-command = "tuigreet --time --remember --cmd sway"
-user = "greeter"
-GREETD_EOF
-    sudo systemctl enable greetd
-    echo -e "${GREEN}✓${NC} greetd service enabled (will start on next boot)"
+    echo -e "${YELLOW}→${NC} Enabling ly service..."
+    sudo systemctl enable ly@tty1
+    echo -e "${GREEN}✓${NC} ly service enabled (will start on next boot)"
 fi
 
 # Docker service

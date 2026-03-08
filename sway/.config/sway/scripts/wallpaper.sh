@@ -7,7 +7,7 @@ done
 WALLPAPER_DIR="$HOME/.config/backdrops"
 
 while true; do
-    WALLPAPER=$(find "$WALLPAPER_DIR" -type f | shuf -n 1)
+    WALLPAPER=$(find -L "$WALLPAPER_DIR" -type f | shuf -n 1)
     killall swaybg 2>/dev/null
     swaybg -i "$WALLPAPER" -m fill &
     sleep 1800

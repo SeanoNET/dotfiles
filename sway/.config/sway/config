@@ -73,6 +73,7 @@ exec ghostty --class=scratchpad-term
 
 # Waybar
 exec_always gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+exec_always gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'
 exec_always bash -c 'pkill -x waybar; sleep 0.5; waybar'
 
 # Dictate (user project, likely XWayland)
@@ -118,8 +119,8 @@ workspace_layout default
 default_border pixel 1
 
 # Set inner/outer gaps
-gaps inner 6
-gaps outer 3
+gaps inner 4
+gaps outer 2
 
 # Use Mouse+$mod to drag floating windows
 floating_modifier $mod normal
@@ -311,17 +312,17 @@ for_window [title="^About "] floating enable
 ######################################
 
 # Define colors variables:
-set $darkbluetrans	#08052be6
-set $darkblue		#08052b
-set $lightblue		#5294e2
-set $urgentred		#e53935
-set $white		#ffffff
-set $black		#000000
-set $purple		#e345ff
-set $darkgrey		#383c4a
-set $grey		#b0b5bd
-set $mediumgrey		#8b8b8b
-set $yellowbrown	#e1b700
+set $darkbluetrans	#24283be6
+set $darkblue		#24283b
+set $lightblue		#7aa2f7
+set $urgentred		#f7768e
+set $white		#c0caf5
+set $black		#1a1b26
+set $purple		#bb9af7
+set $darkgrey		#414868
+set $grey		#565f89
+set $mediumgrey		#565f89
+set $yellowbrown	#ff9e64
 
 # Define colors for windows:
 #class		        	border		bground		text		indicator	child_border

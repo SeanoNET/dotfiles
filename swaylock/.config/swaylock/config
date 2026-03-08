@@ -2,32 +2,46 @@ daemonize
 show-failed-attempts
 ignore-empty-password
 
-# Colors (matching theme)
-color=1e1e1edd
-inside-color=1e1e1e00
-ring-color=1b9fc6ff
-key-hl-color=5294e2ff
-line-color=00000000
-separator-color=00000000
+# Screenshot + blur
+screenshots
+effect-blur=20x6
+effect-vignette=0.5:0.5
+fade-in=0.2
 
-# Wrong password
-inside-wrong-color=bd2c4080
-ring-wrong-color=bd2c40ff
-text-wrong-color=ffffffff
+# Clock
+clock
+timestr=%H:%M
+datestr=%A, %B %e
 
-# Verifying
-inside-ver-color=1b9fc680
-ring-ver-color=1b9fc6ff
-text-ver-color=ffffffff
-
-# Clear
-inside-clear-color=e1b70080
-ring-clear-color=e1b700ff
-text-clear-color=ffffffff
-
-# Layout
+# Indicator
+indicator
 indicator-radius=100
 indicator-thickness=10
+indicator-idle-visible
+
+# Colors (Tokyo Night Storm)
+inside-color=24283b80
+ring-color=7aa2f7ff
+key-hl-color=bb9af7ff
+line-color=00000000
+separator-color=00000000
+text-color=c0caf5ff
+
+# Wrong password
+inside-wrong-color=f7768e80
+ring-wrong-color=f7768eff
+text-wrong-color=c0caf5ff
+
+# Verifying
+inside-ver-color=7aa2f780
+ring-ver-color=7aa2f7ff
+text-ver-color=c0caf5ff
+
+# Clear
+inside-clear-color=e0af6880
+ring-clear-color=e0af68ff
+text-clear-color=c0caf5ff
 
 # Font
 font=JetBrains Mono
+font-size=24
