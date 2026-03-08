@@ -1,7 +1,7 @@
 /* Waybar Style — Tokyo Night Storm floating bar
  * bg:      #24283b  fg:      #c0caf5  current: #414868  comment: #565f89
  * cyan:    #7dcfff  green:   #9ece6a  orange:  #ff9e64
- * purple:  #bb9af7  red:     #f7768e
+ * purple:  #7aa2f7  red:     #f7768e
  * yellow:  #e0af68
  */
 
@@ -67,7 +67,7 @@ window#waybar {
 #clock:hover,
 #custom-power:hover {
     background: rgba(65, 72, 104, 0.7);
-    border-left-color: #bb9af7;
+    border-left-color: #7aa2f7;
     color: #c0caf5;
 }
 
@@ -91,13 +91,13 @@ window#waybar {
 }
 
 #workspaces button:hover {
-    background: rgba(187, 154, 247, 0.25);
+    background: rgba(122, 162, 247, 0.25);
     color: #c0caf5;
 }
 
 #workspaces button.focused,
 #workspaces button.active {
-    background: #bb9af7;
+    background: #7aa2f7;
     color: #24283b;
     font-weight: bold;
 }
@@ -110,7 +110,7 @@ window#waybar {
 /* ---- Left: mode ---- */
 
 #mode {
-    background: #bb9af7;
+    background: #7aa2f7;
     color: #24283b;
     border-radius: 10px;
     padding: 2px 12px;
@@ -145,7 +145,7 @@ window#waybar {
 
 #clock {
     color: #c0caf5;
-    border-left-color: #bb9af7;
+    border-left-color: #7aa2f7;
     font-weight: bold;
 }
 
