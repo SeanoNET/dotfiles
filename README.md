@@ -35,7 +35,7 @@ cd ~/dotfiles
 | App Launcher | Vicinae |
 | Browser | Zen Browser |
 | File Manager | Nautilus / Yazi (TUI) |
-| Editor | Vim / Zed / VS Code |
+| Editor | Neovim (LazyVim) / Zed / VS Code |
 | Git TUI | Lazygit |
 | Audio | PipeWire + WirePlumber + Wiremix (TUI) |
 | Bluetooth | Bluetuith (TUI) |
@@ -167,7 +167,7 @@ Each directory is a stow package that maps to `$HOME`:
 | `ghostty` | Terminal config (opacity, font, shell) |
 | `git` | Git config + delta pager |
 | `kanshi` | Monitor profile switching |
-| `vim` | Vim config (Tokyo Night theme) |
+| `nvim` | Neovim + LazyVim config (Tokyo Night Storm) |
 | `lazygit` | Git TUI config + keybindings |
 | `rofi` | Launcher/menu themes (powermenu, power-profiles) |
 | `starship` | Shell prompt config |
@@ -211,7 +211,7 @@ Plugins: Tokyo Night theme, tmux-resurrect, tmux-tilish, tmux-command-palette, t
 
 ## Zsh
 
-Aliases: `vi` = vim, `sp` = spotify_player, `ls/ll/la` = eza.
+Aliases: `vim`/`vi` = nvim, `sp` = spotify_player, `ls/ll/la` = eza.
 
 Plugins (via zinit): syntax-highlighting, autosuggestions, completions, fzf-tab.
 

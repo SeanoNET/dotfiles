@@ -160,7 +160,7 @@ OFFICIAL_PACKAGES=(
     "fzf"
     "zoxide"
     "eza"
-    "vim"
+    "neovim"
     "bat"
     "glow"
     "git-delta"
@@ -358,7 +358,7 @@ STOW_PACKAGES=(
     sway
     swaylock
     tmux
-    vim
+    nvim
     vscode
     waybar
     yazi

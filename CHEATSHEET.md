@@ -89,7 +89,7 @@
 - `l` - Long list with git status
 
 ### Utilities
-- `vi` - Opens vim
+- `vim` / `vi` - Opens Neovim (LazyVim)
 - `c` - Clear screen
 - `sp` - Spotify player
 
