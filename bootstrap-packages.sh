@@ -454,6 +454,52 @@ else
     echo -e "${GREEN}✓${NC} ly service enabled (will start on next boot)"
 fi
 
+# SMB mounts (Unraid NAS + Home Assistant)
+if [[ -f "$DOTFILES_DIR/smb/fstab.smb" ]]; then
+    echo -e "${YELLOW}→${NC} Setting up SMB mounts..."
+    # Install cifs-utils if not present
+    if ! pacman -Qi cifs-utils &>/dev/null; then
+        sudo pacman -S --needed --noconfirm cifs-utils
+    fi
+    # Create mount points
+    sudo mkdir -p /mnt/unraid/{backups,appdata,media,share} /mnt/hass-config
+    # Create credentials directory
+    sudo mkdir -p /etc/samba/credentials
+    # Append SMB entries to fstab if not already present
+    if ! grep -q "fstab.smb" /etc/fstab 2>/dev/null; then
+        echo "" | sudo tee -a /etc/fstab > /dev/null
+        echo "# SMB mounts managed by dotfiles (smb/fstab.smb)" | sudo tee -a /etc/fstab > /dev/null
+        cat "$DOTFILES_DIR/smb/fstab.smb" | sudo tee -a /etc/fstab > /dev/null
+        echo -e "${GREEN}✓${NC} SMB fstab entries added"
+    else
+        echo -e "${GREEN}✓${NC} SMB fstab entries already present"
+    fi
+    # Create credential files with defaults if they don't exist
+    if [[ ! -f /etc/samba/credentials/unraid ]]; then
+        sudo tee /etc/samba/credentials/unraid > /dev/null <<'CRED'
+username=CHANGEME
+password=CHANGEME
+CRED
+        sudo chmod 600 /etc/samba/credentials/unraid
+        echo -e "${YELLOW}!${NC} Created /etc/samba/credentials/unraid — edit with your credentials"
+    else
+        echo -e "${GREEN}✓${NC} /etc/samba/credentials/unraid already exists"
+    fi
+    if [[ ! -f /etc/samba/credentials/hass ]]; then
+        sudo tee /etc/samba/credentials/hass > /dev/null <<'CRED'
+username=CHANGEME
+password=CHANGEME
+CRED
+        sudo chmod 600 /etc/samba/credentials/hass
+        echo -e "${YELLOW}!${NC} Created /etc/samba/credentials/hass — edit with your credentials"
+    else
+        echo -e "${GREEN}✓${NC} /etc/samba/credentials/hass already exists"
+    fi
+    # Reload systemd to pick up automount units
+    sudo systemctl daemon-reload
+    echo -e "${GREEN}✓${NC} SMB automount configured (mounts on first access)"
+fi
+
 # Docker service
 if systemctl is-enabled docker &>/dev/null; then
     echo -e "${GREEN}✓${NC} Docker service already enabled"
@@ -526,6 +572,55 @@ for plugin in "${TMUX_PLUGINS[@]}"; do
     fi
 done
 
+# ── Snapper (Btrfs Snapshots) ──────────────────────────────────────
+
+if command -v snapper &>/dev/null; then
+    # Enable timeline snapshots for root
+    if snapper list-configs 2>/dev/null | grep -q "^root "; then
+        sudo sed -i 's/TIMELINE_CREATE="no"/TIMELINE_CREATE="yes"/' /etc/snapper/configs/root
+        sudo systemctl enable --now snapper-timeline.timer
+        echo -e "${GREEN}✓${NC} Snapper timeline snapshots enabled for /"
+    fi
+
+    # Create snapper config for /home if it doesn't exist
+    if snapper list-configs 2>/dev/null | grep -q "^home "; then
+        echo -e "${GREEN}✓${NC} Snapper home config already exists"
+    else
+        echo -e "${YELLOW}→${NC} Creating snapper config for /home..."
+        sudo snapper -c home create-config /home
+        sudo sed -i 's/TIMELINE_CREATE="no"/TIMELINE_CREATE="yes"/' /etc/snapper/configs/home
+        echo -e "${GREEN}✓${NC} Snapper config created for /home"
+    fi
+
+    sudo systemctl enable --now snapper-cleanup.timer
+    echo -e "${GREEN}✓${NC} Snapper cleanup timer enabled"
+
+    # Remind about dedicated snapshot drive
+    if ! findmnt /.snapshots | grep -q "/dev/sd\|/dev/nvme" 2>/dev/null; then
+        echo -e "${YELLOW}⚠${NC} Snapshots are stored on the root partition. Consider moving to a dedicated drive (see README)."
+    fi
+else
+    echo -e "${YELLOW}⚠${NC} snapper not found, skipping snapshot setup"
+fi
+
+# ── Snapshot Backup to Unraid ─────────────────────────────────────
+if [[ -f "$DOTFILES_DIR/smb/snapshot-backup.sh" ]] && command -v snapper &>/dev/null; then
+    echo -e "${YELLOW}→${NC} Setting up snapshot backup to Unraid..."
+    sudo cp "$DOTFILES_DIR/smb/snapshot-backup.sh" /usr/local/bin/snapshot-backup.sh
+    sudo chmod +x /usr/local/bin/snapshot-backup.sh
+    sudo cp "$DOTFILES_DIR/smb/snapshot-backup.service" /etc/systemd/system/snapshot-backup.service
+    sudo cp "$DOTFILES_DIR/smb/snapshot-backup.timer" /etc/systemd/system/snapshot-backup.timer
+    sudo systemctl daemon-reload
+    sudo systemctl enable snapshot-backup.timer
+    echo -e "${GREEN}✓${NC} Snapshot backup timer enabled (weekly)"
+    if mountpoint -q /mnt/unraid/backups 2>/dev/null || ls /mnt/unraid/backups/ &>/dev/null; then
+        echo -e "${GREEN}✓${NC} Backup share is accessible"
+    else
+        echo -e "${YELLOW}!${NC} /mnt/unraid/backups is not mounted — backup will run once the SMB share is available"
+        echo -e "    Test with: sudo systemctl start snapshot-backup.service"
+    fi
+fi
+
 # ── Web Apps ────────────────────────────────────────────────────────
 
 WEBAPP_SCRIPT="$HOME/.config/sway/scripts/webapp"
@@ -548,4 +643,5 @@ echo -e "  2. Set up monitor layout with wlr-randr or sway output config"
 echo -e "  3. Resolve any stow conflicts printed above"
 echo -e "  4. In tmux: prefix + I (if tpm plugin install didn't run)"
 echo -e "  5. Run: nvm install --lts (for Node.js)"
+echo -e "  6. Move snapshots to dedicated SSD (see README → Snapshots & Backup)"
 echo ""

@@ -1,0 +1,10 @@
+[Unit]
+Description=Weekly snapshot backup to Unraid
+
+[Timer]
+OnCalendar=weekly
+RandomizedDelaySec=1h
+Persistent=true
+
+[Install]
+WantedBy=timers.target
