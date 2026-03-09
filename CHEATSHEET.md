@@ -89,7 +89,7 @@
 - `l` - Long list with git status
 
 ### Utilities
-- `vim` - Opens helix editor
+- `vi` - Opens vim
 - `c` - Clear screen
 - `sp` - Spotify player
 
@@ -98,7 +98,7 @@
 ### Installed Plugins
 - `tpm` - Tmux Plugin Manager
 - `tmux-sensible` - Sensible default settings
-- `dracula/tmux` - Dracula theme
+- `tokyo-night-tmux` - Tokyo Night theme
 - `tmux-resurrect` - Save/restore sessions
 - `tmux-command-palette` - Command palette
 - `tmux-tilish` - Tiling window manager keybindings

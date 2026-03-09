@@ -2,4 +2,4 @@
 show_hidden = true
 
 [opener]
-edit = [{ run = 'helix "$@"', block = true }]
+edit = [{ run = 'vim "$@"', block = true }]

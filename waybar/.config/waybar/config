@@ -1,4 +1,4 @@
-// Waybar config — Dracula floating bar with grouped modules
+// Waybar config — Tokyo Night Storm floating bar with grouped modules
 // Modules auto-hide when hardware is absent (battery, wifi, ethernet, bluetooth)
 {
     "layer": "top",
@@ -170,6 +170,6 @@
     "custom/power": {
         "format": "⏻",
         "tooltip": false,
-        "on-click": "swaynag -t warning -m 'Power Menu' -B '󰐥 Shutdown' 'systemctl poweroff' -B ' Reboot' 'systemctl reboot' -B ' Lock' 'swaylock' -B '󰍃 Logout' 'swaymsg exit'"
+        "on-click": "~/.config/sway/scripts/powermenu"
     }
 }

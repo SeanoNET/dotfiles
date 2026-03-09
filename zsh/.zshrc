@@ -6,7 +6,6 @@ fi
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 
-export QT_QPA_PLATFORMTHEME=qt5ct
 export QT_QPA_PLATFORMTHEME=qt6ct
 
 # Add fzf to PATH
@@ -19,7 +18,9 @@ export PATH="$HOME/.dotnet:$HOME/.dotnet/tools:$PATH"
 # Set the directory we want to store zinit and plugins
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
-export SUDO_EDITOR=$(which helix) 
+export SUDO_EDITOR=$(which vim)
+export EDITOR=vim
+export VISUAL=vim
 
 # Download Zinit, if it's not there yet
 if [ ! -d "$ZINIT_HOME" ]; then
@@ -63,7 +64,7 @@ bindkey '^p' history-search-backward
 bindkey '^n' history-search-forward
 
 # Aliases
-alias vim='helix'
+alias vi='vim'
 alias c='clear'
 alias ls='eza --icons --group-directories-first --color=always --tree'
 alias ll='eza -l --icons'

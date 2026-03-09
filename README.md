@@ -1,6 +1,6 @@
 # Dotfiles
 
-Arch Linux (CachyOS) desktop environment built on **Sway** (Wayland), **Ghostty**, **Tmux** (Dracula theme), and **Waybar**. Managed with [GNU Stow](https://www.gnu.org/software/stow/).
+Arch Linux (CachyOS) desktop environment built on **Sway** (Wayland), **Ghostty**, **Tmux** (Tokyo Night theme), and **Waybar**. Managed with [GNU Stow](https://www.gnu.org/software/stow/).
 
 ## Quick Start
 
@@ -27,15 +27,15 @@ cd ~/dotfiles
 | Layer | Tool |
 |-------|------|
 | Window Manager | Sway |
-| Status Bar | Waybar (Dracula theme, pill modules) |
+| Status Bar | Waybar (Tokyo Night theme, pill modules) |
 | Terminal | Ghostty |
-| Multiplexer | Tmux (Dracula theme, prefix: `Ctrl+Space`) |
+| Multiplexer | Tmux (Tokyo Night theme, prefix: `Ctrl+Space`) |
 | Shell | Zsh + Oh My Zsh + Zinit |
 | Prompt | Starship |
 | App Launcher | Vicinae |
 | Browser | Zen Browser |
 | File Manager | Nautilus / Yazi (TUI) |
-| Editor | Helix / Zed / VS Code |
+| Editor | Vim / Zed / VS Code |
 | Git TUI | Lazygit |
 | Audio | PipeWire + WirePlumber + Wiremix (TUI) |
 | Bluetooth | Bluetuith (TUI) |
@@ -166,15 +166,16 @@ Each directory is a stow package that maps to `$HOME`:
 | `chromium` | Chromium Wayland flags (for web apps) |
 | `ghostty` | Terminal config (opacity, font, shell) |
 | `git` | Git config + delta pager |
-| `helix` | Modal text editor config |
+| `kanshi` | Monitor profile switching |
+| `vim` | Vim config (Tokyo Night theme) |
 | `lazygit` | Git TUI config + keybindings |
 | `rofi` | Launcher/menu themes (powermenu, power-profiles) |
 | `starship` | Shell prompt config |
 | `sway` | Window manager config + scripts |
 | `swaylock` | Lock screen config |
-| `tmux` | Multiplexer config + Dracula theme |
+| `tmux` | Multiplexer config + Tokyo Night theme |
 | `vscode` | VS Code settings |
-| `waybar` | Status bar config + Dracula style |
+| `waybar` | Status bar config + Tokyo Night style |
 | `yazi` | Terminal file manager config |
 | `zed` | Code editor config |
 | `zsh` | Shell config (zinit, aliases, integrations) |
@@ -204,13 +205,13 @@ Prefix: `Ctrl+Space`
 | `prefix + r` | Reload config |
 | `prefix + I` | Install plugins (tpm) |
 
-Plugins: Dracula theme, tmux-resurrect, tmux-tilish, tmux-command-palette, tmux-fzf, tmux-menus.
+Plugins: Tokyo Night theme, tmux-resurrect, tmux-tilish, tmux-command-palette, tmux-fzf, tmux-menus.
 
 ---
 
 ## Zsh
 
-Aliases: `vim` = helix, `sp` = spotify_player, `ls/ll/la` = eza.
+Aliases: `vi` = vim, `sp` = spotify_player, `ls/ll/la` = eza.
 
 Plugins (via zinit): syntax-highlighting, autosuggestions, completions, fzf-tab.
 

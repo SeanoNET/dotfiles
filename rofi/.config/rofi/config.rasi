@@ -1,18 +1,206 @@
-// @theme "~/.local/share/rofi/themes/arc_dark_transparent_colors.rasi"
 configuration{
     modi: "run,window,combi";
     icon-theme: "Oranchelo";
     show-icons: true;
-    terminal: "alacritty";
+    terminal: "ghostty";
     drun-display-format: "{icon} {name}";
     location: 0;
     disable-history: false;
     hide-scrollbar: true;
-    display-combi: " 🖥️  All ";
-    display-run: " 🏃  Run ";
-    display-window: " 🪟  Window";
+    display-combi: "All";
+    display-run: "Run";
+    display-window: "Window";
     sidebar-mode: true;
-    font: "JetBrains Mono";
+    font: "JetBrainsMono Nerd Font 12";
 }
 
-@theme "/home/seano/.local/share/rofi/themes/spotlight-tokyonight.rasi"
+/* Tokyo Night Storm theme */
+* {
+    bg:                 #24283bee;
+    bg-alt:             #1f2335ee;
+    fg:                 #c0caf5;
+    fg-alt:             #565f89;
+    accent:             #7aa2f7;
+    urgent:             #f7768e;
+    green:              #9ece6a;
+
+    background:                  @bg;
+    background-color:            @bg;
+    foreground:                  @fg;
+    normal-background:           transparent;
+    normal-foreground:           @fg;
+    alternate-normal-background: transparent;
+    alternate-normal-foreground: @fg;
+    selected-normal-background:  @accent;
+    selected-normal-foreground:  #24283b;
+    active-background:           @accent;
+    active-foreground:           #24283b;
+    alternate-active-background: @accent;
+    alternate-active-foreground: #24283b;
+    selected-active-background:  @accent;
+    selected-active-foreground:  #24283b;
+    urgent-background:           @urgent;
+    urgent-foreground:           #24283b;
+    alternate-urgent-background: @urgent;
+    alternate-urgent-foreground: #24283b;
+    selected-urgent-background:  @urgent;
+    selected-urgent-foreground:  #24283b;
+    separatorcolor:              @fg-alt;
+    border-color:                @fg-alt;
+}
+
+window {
+    background-color: @bg;
+    border:           2px;
+    border-color:     @fg-alt;
+    border-radius:    12px;
+    padding:          20px;
+    width:            600px;
+}
+
+mainbox {
+    border:  0;
+    padding: 0;
+}
+
+inputbar {
+    spacing:          0;
+    text-color:       @fg;
+    padding:          8px 12px;
+    background-color: @bg-alt;
+    border-radius:    8px;
+    margin:           0 0 10px 0;
+    children:         [ prompt, textbox-prompt-colon, entry, case-indicator ];
+}
+
+prompt {
+    spacing:    0;
+    text-color: @accent;
+}
+
+textbox-prompt-colon {
+    expand:     false;
+    str:        " ";
+    margin:     0 4px 0 0;
+    text-color: @fg-alt;
+}
+
+entry {
+    spacing:    0;
+    text-color: @fg;
+    placeholder: "Search...";
+    placeholder-color: @fg-alt;
+}
+
+case-indicator {
+    spacing:    0;
+    text-color: @fg;
+}
+
+listview {
+    fixed-height: 0;
+    border:       0;
+    spacing:      4px;
+    scrollbar:    false;
+    padding:      4px 0 0;
+    lines:        8;
+    columns:      1;
+}
+
+element {
+    border:        0;
+    padding:       6px 10px;
+    border-radius: 8px;
+}
+
+element-icon {
+    background-color: transparent;
+    size:             24px;
+    margin:           0 8px 0 0;
+}
+
+element-text {
+    background-color: transparent;
+    text-color:       inherit;
+}
+
+element.normal.normal {
+    background-color: transparent;
+    text-color:       @fg;
+}
+
+element.normal.urgent {
+    background-color: @urgent-background;
+    text-color:       @urgent-foreground;
+}
+
+element.normal.active {
+    background-color: @active-background;
+    text-color:       @active-foreground;
+}
+
+element.selected.normal {
+    background-color: @selected-normal-background;
+    text-color:       @selected-normal-foreground;
+}
+
+element.selected.urgent {
+    background-color: @selected-urgent-background;
+    text-color:       @selected-urgent-foreground;
+}
+
+element.selected.active {
+    background-color: @selected-active-background;
+    text-color:       @selected-active-foreground;
+}
+
+element.alternate.normal {
+    background-color: transparent;
+    text-color:       @fg;
+}
+
+element.alternate.urgent {
+    background-color: @alternate-urgent-background;
+    text-color:       @alternate-urgent-foreground;
+}
+
+element.alternate.active {
+    background-color: @alternate-active-background;
+    text-color:       @alternate-active-foreground;
+}
+
+scrollbar {
+    width:        4px;
+    border:       0;
+    handle-color: @fg-alt;
+    handle-width: 8px;
+    padding:      0;
+}
+
+mode-switcher {
+    border:       1px 0 0;
+    border-color: @fg-alt;
+    margin:       8px 0 0 0;
+}
+
+button {
+    spacing:       0;
+    text-color:    @fg-alt;
+    padding:       6px;
+    border-radius: 8px;
+}
+
+button.selected {
+    background-color: @accent;
+    text-color:       #24283b;
+}
+
+message {
+    border:       1px 0 0;
+    border-color: @fg-alt;
+    padding:      8px;
+}
+
+textbox {
+    text-color: @fg;
+}
