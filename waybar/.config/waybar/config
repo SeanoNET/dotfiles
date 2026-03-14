@@ -3,7 +3,7 @@
 {
     "layer": "top",
     "position": "top",
-    "height": 36,
+    "height": 28,
     "margin-top": 4,
     "margin-left": 6,
     "margin-right": 6,
@@ -111,7 +111,7 @@
     // Wifi — auto-hides on desktop (no wl* interface)
     "network#wifi": {
         "interface": "wl*",
-        "format-wifi": " {essid}",
+        "format-wifi": " {signalStrength}%",
         "format-disconnected": "",
         "on-click": "~/.config/sway/scripts/popup-tui.sh nmtui",
         "tooltip-format": "{ifname}: {ipaddr}/{cidr}"
@@ -139,7 +139,7 @@
     },
 
     "disk": {
-        "format": "󰋊 {free}",
+        "format": "󰋊 {percentage_used}%",
         "path": "/"
     },
 
