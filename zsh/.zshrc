@@ -19,7 +19,7 @@ export PATH="$HOME/.dotnet:$HOME/.dotnet/tools:$PATH"
 # Set the directory we want to store zinit and plugins
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
-export SUDO_EDITOR=$(which helix) 
+export SUDO_EDITOR=$(which helix)
 
 # Download Zinit, if it's not there yet
 if [ ! -d "$ZINIT_HOME" ]; then
@@ -261,7 +261,7 @@ alias '?'='noglob google-search'
 alias '??'='noglob claude-query'
 
 # User configuration
-
+export EDITOR='nvim'
 # export MANPATH="/usr/local/man:$MANPATH"
 
 # You may need to manually set your language environment
@@ -310,3 +310,16 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 
 # Added by tally installer
 export PATH="$HOME/.tally/bin:$PATH"
+
+
+lg()
+{
+    export LAZYGIT_NEW_DIR_FILE=~/.lazygit/newdir
+
+    lazygit "$@"
+
+    if [ -f $LAZYGIT_NEW_DIR_FILE ]; then
+            cd "$(cat $LAZYGIT_NEW_DIR_FILE)"
+            rm -f $LAZYGIT_NEW_DIR_FILE > /dev/null
+    fi
+}
