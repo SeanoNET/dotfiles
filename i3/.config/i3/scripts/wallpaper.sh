@@ -4,6 +4,6 @@
 WALLPAPER_DIR="$HOME/.config/backdrops"
 
 while true; do
-    feh --bg-fill --randomize "$WALLPAPER_DIR"
-    sleep 1800  # 30 minutes in seconds
+    feh --bg-scale --randomize "$WALLPAPER_DIR"
+    sleep 300  # 5 minutes in seconds
 done

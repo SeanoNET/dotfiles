@@ -7,6 +7,11 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "agent_servers": {
+    "claude-acp": {
+      "type": "registry"
+    }
+  },
   "telemetry": {
     "metrics": false
   },
@@ -16,7 +21,9 @@
     }
   },
   "agent": {
-    "always_allow_tool_actions": true,
+    "tool_permissions": {
+      "default": "allow"
+    },
     "default_model": {
       "provider": "zed.dev",
       "model": "claude-sonnet-4-thinking"
@@ -32,7 +39,7 @@
   "base_keymap": "VSCode",
   "cursor_shape": "block",
   // "vim_mode": true,
-  "relative_line_numbers": true,
+  "relative_line_numbers": "enabled",
   "vim": {
     "toggle_relative_line_numbers": true
   }
