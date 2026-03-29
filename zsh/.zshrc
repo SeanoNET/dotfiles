@@ -6,6 +6,7 @@ fi
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 
+export QT_QPA_PLATFORMTHEME=qt5ct
 export QT_QPA_PLATFORMTHEME=qt6ct
 
 # Add fzf to PATH
@@ -64,8 +65,7 @@ bindkey '^p' history-search-backward
 bindkey '^n' history-search-forward
 
 # Aliases
-alias vim='nvim'
-alias vi='nvim'
+alias vim='helix'
 alias c='clear'
 alias ls='eza --icons --group-directories-first --color=always --tree'
 alias ll='eza -l --icons'
