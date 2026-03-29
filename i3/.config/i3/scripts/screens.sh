@@ -1,1 +1,0 @@
-xrandr --output DisplayPort-0 --mode 3440x1440 --rate 239.98 

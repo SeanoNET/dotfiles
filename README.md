@@ -1,6 +1,6 @@
 # Dotfiles
 
-Arch Linux (CachyOS) desktop environment built on **Sway** (Wayland), **Ghostty**, **Tmux** (Dracula theme), and **Waybar**. Managed with [GNU Stow](https://www.gnu.org/software/stow/).
+Arch Linux (CachyOS) desktop environment built on **Sway** (Wayland), **Ghostty**, **Tmux** (Tokyo Night theme), and **Waybar**. Managed with [GNU Stow](https://www.gnu.org/software/stow/).
 
 ## Quick Start
 
@@ -27,15 +27,15 @@ cd ~/dotfiles
 | Layer | Tool |
 |-------|------|
 | Window Manager | Sway |
-| Status Bar | Waybar (Dracula theme, pill modules) |
+| Status Bar | Waybar (Tokyo Night theme, pill modules) |
 | Terminal | Ghostty |
-| Multiplexer | Tmux (Dracula theme, prefix: `Ctrl+Space`) |
+| Multiplexer | Tmux (Tokyo Night theme, prefix: `Ctrl+Space`) |
 | Shell | Zsh + Oh My Zsh + Zinit |
 | Prompt | Starship |
 | App Launcher | Vicinae |
 | Browser | Zen Browser |
 | File Manager | Nautilus / Yazi (TUI) |
-| Editor | Helix / Zed / VS Code |
+| Editor | Neovim (LazyVim) / Zed / VS Code |
 | Git TUI | Lazygit |
 | Audio | PipeWire + WirePlumber + Wiremix (TUI) |
 | Bluetooth | Bluetuith (TUI) |
@@ -266,6 +266,154 @@ Integrations: fzf, zoxide, nvm, starship prompt.
     </td>
   </tr>
 </table>
+---
+
+## Snapshots & Backup
+
+Btrfs snapshots are managed with **Snapper** and **snap-pac**. The filesystem uses separate subvolumes (`@`, `@home`, `@root`, `@srv`, `@cache`, `@tmp`, `@log`) so each can be snapshotted and restored independently.
+
+### What's automated
+
+- **snap-pac** — automatically creates pre/post snapshots on every `pacman` transaction
+- **snapper-timeline.timer** — creates hourly snapshots with automatic cleanup (5 hourly, 7 daily)
+- **snapper-cleanup.timer** — prunes old snapshots based on retention limits
+
+### Setup
+
+```bash
+# Enable timeline snapshots for / (root)
+sudo sed -i 's/TIMELINE_CREATE="no"/TIMELINE_CREATE="yes"/' /etc/snapper/configs/root
+sudo systemctl enable --now snapper-timeline.timer
+
+# Add snapper config for /home
+sudo snapper -c home create-config /home
+sudo sed -i 's/TIMELINE_CREATE="no"/TIMELINE_CREATE="yes"/' /etc/snapper/configs/home
+```
+
+### Common commands
+
+```bash
+# List snapshots
+snapper -c root list
+snapper -c home list
+
+# Create a manual snapshot
+sudo snapper -c root create -d "before risky change"
+sudo snapper -c home create -d "before risky change"
+
+# Compare two snapshots (see what changed)
+snapper -c root diff 1..2
+
+# View file changes between snapshots
+snapper -c root status 1..2
+```
+
+### Restoring a snapshot
+
+**Restore a single file from a snapshot:**
+
+```bash
+# Find the snapshot number
+snapper -c root list
+
+# Snapshots live at /.snapshots/<number>/snapshot/
+# Copy the file back from the snapshot
+sudo cp /.snapshots/5/snapshot/etc/some-config /etc/some-config
+```
+
+**Restore home directory files:**
+
+```bash
+# Home snapshots live at /home/.snapshots/<number>/snapshot/
+sudo cp /home/.snapshots/3/snapshot/username/somefile ~/somefile
+```
+
+**Undo changes between two snapshots (surgical rollback):**
+
+```bash
+# Undo all changes that happened between snapshot 1 and 2
+sudo snapper -c root undochange 1..2
+
+# Undo changes to specific files only
+sudo snapper -c root undochange 1..2 /etc/some-config
+```
+
+**Full system rollback (boot into a previous snapshot):**
+
+> This is for when the system won't boot or a major upgrade broke things.
+
+```bash
+# 1. Boot from a live USB or recovery
+# 2. Mount the btrfs partition
+sudo mount /dev/vda3 /mnt
+
+# 3. The current broken root is at /mnt/@
+#    Snapshots are at /mnt/@/.snapshots/<number>/snapshot
+
+# 4. Move the broken subvolume out of the way
+sudo mv /mnt/@ /mnt/@.broken
+
+# 5. Snapshot the good snapshot as the new root
+sudo btrfs subvolume snapshot /mnt/@.snapshots/<number>/snapshot /mnt/@
+
+# 6. Unmount and reboot
+sudo umount /mnt
+reboot
+
+# 7. After confirming everything works, delete the broken one
+sudo btrfs subvolume delete /mnt/@.broken
+```
+
+### Dedicated snapshot drive (recommended)
+
+Storing snapshots on a separate drive prevents them from consuming root partition space and protects against drive failure. This can be done at any time after install — snapper doesn't care where `/.snapshots` is mounted, existing snapshots on the old subvolume will be lost.
+
+```bash
+# 1. Identify the SSD (e.g. /dev/sdX)
+lsblk
+
+# 2. Format as btrfs
+sudo mkfs.btrfs -L snapshots /dev/sdX
+
+# 3. Create subvolumes for root and home snapshots
+sudo mount /dev/sdX /mnt
+sudo btrfs subvolume create /mnt/@snapshots-root
+sudo btrfs subvolume create /mnt/@snapshots-home
+sudo umount /mnt
+
+# 4. Remove the default .snapshots subvolumes and create mount points
+sudo btrfs subvolume delete /.snapshots
+sudo mkdir /.snapshots
+sudo btrfs subvolume delete /home/.snapshots
+sudo mkdir /home/.snapshots
+
+# 5. Get the UUID of the snapshot SSD
+sudo blkid /dev/sdX
+
+# 6. Add to /etc/fstab
+echo 'UUID=<ssd-uuid>  /.snapshots       btrfs  subvol=/@snapshots-root,defaults,noatime,compress=zstd  0 0' | sudo tee -a /etc/fstab
+echo 'UUID=<ssd-uuid>  /home/.snapshots  btrfs  subvol=/@snapshots-home,defaults,noatime,compress=zstd  0 0' | sudo tee -a /etc/fstab
+
+# 7. Mount and verify
+sudo mount -a
+findmnt /.snapshots
+findmnt /home/.snapshots
+```
+
+### GUI
+
+**btrfs-assistant** provides a graphical interface for browsing and restoring snapshots:
+
+```bash
+btrfs-assistant
+```
+
+---
+
+## Resources
+
+- [The Linux Book](https://thelinuxbook.com) — general Linux reference
+
 ---
 
 ## License

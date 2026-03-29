@@ -136,6 +136,7 @@ OFFICIAL_PACKAGES=(
     "xdg-desktop-portal-gtk"
     "xorg-xwayland"
     "dunst"
+    "kanshi"
     "dex"
     "imagemagick"
     "polkit-gnome"
@@ -159,7 +160,7 @@ OFFICIAL_PACKAGES=(
     "fzf"
     "zoxide"
     "eza"
-    "helix"
+    "neovim"
     "bat"
     "glow"
     "git-delta"
@@ -306,14 +307,23 @@ else
     echo -e "${GREEN}✓${NC} zinit installed"
 fi
 
-# nvm
-if [[ -d "$HOME/.nvm" ]]; then
+# nvm + Node.js LTS
+export NVM_DIR="$HOME/.nvm"
+if [[ -d "$NVM_DIR" ]]; then
     echo -e "${GREEN}✓${NC} nvm already installed"
 else
     echo -e "${YELLOW}→${NC} Installing nvm..."
-    export NVM_DIR="$HOME/.nvm"
     PROFILE=/dev/null bash -c "$(curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh)"
     echo -e "${GREEN}✓${NC} nvm installed"
+fi
+# Install Node.js LTS
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+if command -v node &>/dev/null; then
+    echo -e "${GREEN}✓${NC} Node.js already installed ($(node --version))"
+else
+    echo -e "${YELLOW}→${NC} Installing Node.js LTS..."
+    nvm install --lts
+    echo -e "${GREEN}✓${NC} Node.js LTS installed ($(node --version))"
 fi
 
 # claude code
@@ -341,13 +351,14 @@ STOW_PACKAGES=(
     dunst
     ghostty
     git
-    helix
+    kanshi
     lazygit
     rofi
     starship
     sway
     swaylock
     tmux
+    nvim
     vscode
     waybar
     yazi
@@ -387,6 +398,36 @@ echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━�
 echo -e "${BLUE}    Theme Setup (Tokyo Night Storm)${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
+
+# GTK dark theme
+echo -e "${YELLOW}→${NC} Configuring GTK dark theme..."
+gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark' 2>/dev/null || true
+gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark' 2>/dev/null || true
+echo -e "${GREEN}✓${NC} GTK dark theme configured"
+
+# Qt theme (qt5ct/qt6ct)
+for ver in qt5ct qt6ct; do
+    config_dir="$HOME/.config/$ver"
+    config_file="$config_dir/$ver.conf"
+    if [[ ! -f "$config_file" ]]; then
+        echo -e "${YELLOW}→${NC} Creating $ver config..."
+        mkdir -p "$config_dir"
+        cat > "$config_file" <<QTCONF
+[Appearance]
+style=Fusion
+color_scheme_path=
+custom_palette=false
+standard_dialogs=default
+
+[Fonts]
+fixed="JetBrains Mono,10,-1,5,50,0,0,0,0,0"
+general="JetBrains Mono,10,-1,5,50,0,0,0,0,0"
+QTCONF
+        echo -e "${GREEN}✓${NC} $ver config created"
+    else
+        echo -e "${GREEN}✓${NC} $ver config already exists"
+    fi
+done
 
 # VS Code Tokyo Night extension
 if command -v code &>/dev/null; then
@@ -452,6 +493,52 @@ else
     echo -e "${YELLOW}→${NC} Enabling ly service..."
     sudo systemctl enable ly@tty1
     echo -e "${GREEN}✓${NC} ly service enabled (will start on next boot)"
+fi
+
+# SMB mounts (Unraid NAS + Home Assistant)
+if [[ -f "$DOTFILES_DIR/smb/fstab.smb" ]]; then
+    echo -e "${YELLOW}→${NC} Setting up SMB mounts..."
+    # Install cifs-utils if not present
+    if ! pacman -Qi cifs-utils &>/dev/null; then
+        sudo pacman -S --needed --noconfirm cifs-utils
+    fi
+    # Create mount points
+    sudo mkdir -p /mnt/unraid/{backups,appdata,media,share} /mnt/hass-config
+    # Create credentials directory
+    sudo mkdir -p /etc/samba/credentials
+    # Append SMB entries to fstab if not already present
+    if ! grep -q "fstab.smb" /etc/fstab 2>/dev/null; then
+        echo "" | sudo tee -a /etc/fstab > /dev/null
+        echo "# SMB mounts managed by dotfiles (smb/fstab.smb)" | sudo tee -a /etc/fstab > /dev/null
+        cat "$DOTFILES_DIR/smb/fstab.smb" | sudo tee -a /etc/fstab > /dev/null
+        echo -e "${GREEN}✓${NC} SMB fstab entries added"
+    else
+        echo -e "${GREEN}✓${NC} SMB fstab entries already present"
+    fi
+    # Create credential files with defaults if they don't exist
+    if [[ ! -f /etc/samba/credentials/unraid ]]; then
+        sudo tee /etc/samba/credentials/unraid > /dev/null <<'CRED'
+username=CHANGEME
+password=CHANGEME
+CRED
+        sudo chmod 600 /etc/samba/credentials/unraid
+        echo -e "${YELLOW}!${NC} Created /etc/samba/credentials/unraid — edit with your credentials"
+    else
+        echo -e "${GREEN}✓${NC} /etc/samba/credentials/unraid already exists"
+    fi
+    if [[ ! -f /etc/samba/credentials/hass ]]; then
+        sudo tee /etc/samba/credentials/hass > /dev/null <<'CRED'
+username=CHANGEME
+password=CHANGEME
+CRED
+        sudo chmod 600 /etc/samba/credentials/hass
+        echo -e "${YELLOW}!${NC} Created /etc/samba/credentials/hass — edit with your credentials"
+    else
+        echo -e "${GREEN}✓${NC} /etc/samba/credentials/hass already exists"
+    fi
+    # Reload systemd to pick up automount units
+    sudo systemctl daemon-reload
+    echo -e "${GREEN}✓${NC} SMB automount configured (mounts on first access)"
 fi
 
 # Docker service
@@ -526,6 +613,55 @@ for plugin in "${TMUX_PLUGINS[@]}"; do
     fi
 done
 
+# ── Snapper (Btrfs Snapshots) ──────────────────────────────────────
+
+if command -v snapper &>/dev/null; then
+    # Enable timeline snapshots for root
+    if snapper list-configs 2>/dev/null | grep -q "^root "; then
+        sudo sed -i 's/TIMELINE_CREATE="no"/TIMELINE_CREATE="yes"/' /etc/snapper/configs/root
+        sudo systemctl enable --now snapper-timeline.timer
+        echo -e "${GREEN}✓${NC} Snapper timeline snapshots enabled for /"
+    fi
+
+    # Create snapper config for /home if it doesn't exist
+    if snapper list-configs 2>/dev/null | grep -q "^home "; then
+        echo -e "${GREEN}✓${NC} Snapper home config already exists"
+    else
+        echo -e "${YELLOW}→${NC} Creating snapper config for /home..."
+        sudo snapper -c home create-config /home
+        sudo sed -i 's/TIMELINE_CREATE="no"/TIMELINE_CREATE="yes"/' /etc/snapper/configs/home
+        echo -e "${GREEN}✓${NC} Snapper config created for /home"
+    fi
+
+    sudo systemctl enable --now snapper-cleanup.timer
+    echo -e "${GREEN}✓${NC} Snapper cleanup timer enabled"
+
+    # Remind about dedicated snapshot drive
+    if ! findmnt /.snapshots | grep -q "/dev/sd\|/dev/nvme" 2>/dev/null; then
+        echo -e "${YELLOW}⚠${NC} Snapshots are stored on the root partition. Consider moving to a dedicated drive (see README)."
+    fi
+else
+    echo -e "${YELLOW}⚠${NC} snapper not found, skipping snapshot setup"
+fi
+
+# ── Snapshot Backup to Unraid ─────────────────────────────────────
+if [[ -f "$DOTFILES_DIR/smb/snapshot-backup.sh" ]] && command -v snapper &>/dev/null; then
+    echo -e "${YELLOW}→${NC} Setting up snapshot backup to Unraid..."
+    sudo cp "$DOTFILES_DIR/smb/snapshot-backup.sh" /usr/local/bin/snapshot-backup.sh
+    sudo chmod +x /usr/local/bin/snapshot-backup.sh
+    sudo cp "$DOTFILES_DIR/smb/snapshot-backup.service" /etc/systemd/system/snapshot-backup.service
+    sudo cp "$DOTFILES_DIR/smb/snapshot-backup.timer" /etc/systemd/system/snapshot-backup.timer
+    sudo systemctl daemon-reload
+    sudo systemctl enable snapshot-backup.timer
+    echo -e "${GREEN}✓${NC} Snapshot backup timer enabled (weekly)"
+    if mountpoint -q /mnt/unraid/backups 2>/dev/null || ls /mnt/unraid/backups/ &>/dev/null; then
+        echo -e "${GREEN}✓${NC} Backup share is accessible"
+    else
+        echo -e "${YELLOW}!${NC} /mnt/unraid/backups is not mounted — backup will run once the SMB share is available"
+        echo -e "    Test with: sudo systemctl start snapshot-backup.service"
+    fi
+fi
+
 # ── Web Apps ────────────────────────────────────────────────────────
 
 WEBAPP_SCRIPT="$HOME/.config/sway/scripts/webapp"
@@ -533,6 +669,60 @@ if [[ -x "$WEBAPP_SCRIPT" ]]; then
     echo -e "${YELLOW}→${NC} Installing web apps..."
     "$WEBAPP_SCRIPT" install "Oak Hill Software" "https://oakhillsoftware.app"
     echo -e "${GREEN}✓${NC} Web apps installed"
+fi
+
+# ── Post-Install Validation ─────────────────────────────────────────
+
+echo ""
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}    Post-Install Validation${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo ""
+
+validation_ok=true
+
+for svc in NetworkManager docker power-profiles-daemon; do
+    if systemctl is-enabled "$svc" &>/dev/null; then
+        echo -e "${GREEN}✓${NC} $svc enabled"
+    else
+        echo -e "${RED}✗${NC} $svc not enabled"
+        validation_ok=false
+    fi
+done
+
+if systemctl is-enabled ly@tty1 &>/dev/null; then
+    echo -e "${GREEN}✓${NC} ly display manager enabled"
+else
+    echo -e "${RED}✗${NC} ly display manager not enabled"
+    validation_ok=false
+fi
+
+for svc in pipewire pipewire-pulse wireplumber; do
+    if systemctl --user is-enabled "$svc" &>/dev/null 2>&1; then
+        echo -e "${GREEN}✓${NC} $svc (user) enabled"
+    else
+        echo -e "${YELLOW}⚠${NC} $svc (user) — will auto-start with desktop session"
+    fi
+done
+
+for cmd in sway waybar ghostty tmux zsh stow kanshi; do
+    if command -v "$cmd" &>/dev/null; then
+        echo -e "${GREEN}✓${NC} $cmd available"
+    else
+        echo -e "${RED}✗${NC} $cmd not found in PATH"
+        validation_ok=false
+    fi
+done
+
+if [[ "$SHELL" == *"zsh"* ]]; then
+    echo -e "${GREEN}✓${NC} Default shell is zsh"
+else
+    echo -e "${YELLOW}⚠${NC} Default shell is not zsh (will take effect after re-login)"
+fi
+
+if [[ "$validation_ok" == false ]]; then
+    echo ""
+    echo -e "${YELLOW}⚠${NC} Some checks failed — review the output above"
 fi
 
 # ── Summary ─────────────────────────────────────────────────────────
@@ -544,8 +734,8 @@ echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 echo -e "${YELLOW}Manual steps remaining:${NC}"
 echo -e "  1. Log out and back in (docker group + shell change)"
-echo -e "  2. Set up monitor layout with wlr-randr or sway output config"
+echo -e "  2. Configure monitor profiles in ~/.config/kanshi/config"
 echo -e "  3. Resolve any stow conflicts printed above"
 echo -e "  4. In tmux: prefix + I (if tpm plugin install didn't run)"
-echo -e "  5. Run: nvm install --lts (for Node.js)"
+echo -e "  5. Move snapshots to dedicated SSD (see README → Snapshots & Backup)"
 echo ""

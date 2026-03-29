@@ -59,8 +59,9 @@ exec swayidle -w \
 # Startup:            #
 #######################
 
-# Import environment into systemd user session
+# Import environment into systemd + dbus for screen sharing and portals
 exec systemctl --user import-environment WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
+exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 
 exec dunst
 exec swaymsg workspace number 1
@@ -98,9 +99,12 @@ exec_always bash -c 'pkill -x autotiling; autotiling --limit 2'
 exec gnome-keyring-daemon --start --components=secrets,ssh,pkcs11
 exec systemctl --user import-environment SSH_AUTH_SOCK
 
-# Clipboard persistence
-exec wl-paste --watch cliphist store
+# Clipboard persistence (max 750 items)
+exec wl-paste --watch cliphist store -max-items 750
 bindsym $mod+v exec cliphist list | rofi -dmenu -p "Clipboard:" | cliphist decode | wl-copy
+
+# Monitor profile switching
+exec_always kanshi
 
 # Vicinae launcher
 exec vicinae server
@@ -303,6 +307,7 @@ for_window [class="Xsane"] floating enable
 for_window [app_id="com.popup.*"] floating enable
 for_window [app_id="com.popup.*"] resize set 900 600
 for_window [app_id="com.popup.*"] move position center
+for_window [app_id="Rofi"] floating enable, focus
 for_window [class="qt5ct"] floating enable
 for_window [class="Bluetooth-sendto"] floating enable
 for_window [class="Pamac-manager"] floating enable
