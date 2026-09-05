@@ -1,7 +1,11 @@
 #!/bin/bash
-# Full bootstrap for Arch/EndeavourOS - from zero to working desktop
-# One-liner for fresh machine:
-#   curl -s https://raw.githubusercontent.com/SeanoNET/dotfiles/wayland/bootstrap-packages.sh | bash
+# Bootstrap for an Omarchy machine - layers personal packages and dotfiles on
+# top of a stock Omarchy install. Omarchy already provides Hyprland, its shell
+# (bar/notifications/menus), the login manager, screenshots, clipboard history
+# and the portal/polkit/keyring stack, so none of that is installed here.
+#
+# One-liner for a fresh machine:
+#   curl -s https://raw.githubusercontent.com/SeanoNET/dotfiles/omarchy/bootstrap-packages.sh | bash
 
 set -euo pipefail
 
@@ -29,7 +33,7 @@ fi
 
 # ── Auto-clone logic ─────────────────────────────────────────────────
 DOTFILES_DIR="$HOME/dotfiles"
-DOTFILES_BRANCH="wayland"
+DOTFILES_BRANCH="omarchy"
 SCRIPT_DIR=""
 
 # BASH_SOURCE is empty when piped via curl | bash
@@ -122,28 +126,10 @@ echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 
 OFFICIAL_PACKAGES=(
-    # Wayland / Sway
-    "sway"
-    "waybar"
-    "swayidle"
-    "swaybg"
-    "grim"
-    "slurp"
-    "wl-clipboard"
-    "brightnessctl"
-    "wlr-randr"
-    "xdg-desktop-portal-wlr"
-    "xdg-desktop-portal-gtk"
-    "xorg-xwayland"
-    "dunst"
-    "kanshi"
-    "dex"
-    "imagemagick"
-    "polkit-gnome"
+    # Desktop extras Omarchy doesn't ship
     "nautilus"
-    "cliphist"
-    "gnome-keyring"
     "chromium"
+    "imagemagick"
 
     # Terminal
     "tmux"
@@ -170,7 +156,6 @@ OFFICIAL_PACKAGES=(
     "starship"
     "python"
     "pacman-contrib"
-    "rofi"
 
     # Dev Tools
     "docker"
@@ -210,13 +195,9 @@ OFFICIAL_PACKAGES=(
     "obsidian"
     "power-profiles-daemon"
     "azure-cli"
-    "autotiling"
     "ghostty"
     "scrcpy"
     "thunderbird"
-
-    # Login manager
-    "ly"
 
     # Flatpak (installed here so the flatpak section can use it)
     "flatpak"
@@ -240,8 +221,6 @@ AUR_PACKAGES=(
     "bambustudio-bin"
     "localsend-bin"
     "opencode-bin"
-    "swaylock-effects"
-    "vicinae-bin"
     "zen-browser-bin"
 )
 
@@ -348,19 +327,15 @@ BACKUP_DIR="$HOME/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)"
 STOW_PACKAGES=(
     background
     chromium
-    dunst
     ghostty
     git
-    kanshi
+    hypr
     lazygit
-    rofi
+    omarchy
     starship
-    sway
-    swaylock
     tmux
     nvim
     vscode
-    waybar
     yazi
     zed
     zsh
@@ -472,28 +447,7 @@ else
     echo ""
 fi
 
-# ly display manager — disable any competing DM first
-for dm in gdm sddm lightdm lxdm; do
-    if systemctl is-enabled "$dm" &>/dev/null; then
-        echo -e "${YELLOW}→${NC} Disabling $dm (replacing with ly)..."
-        sudo systemctl disable "$dm"
-        echo -e "${GREEN}✓${NC} $dm disabled"
-    fi
-done
-
-if [[ -f "$DOTFILES_DIR/ly/config.ini" ]]; then
-    echo -e "${YELLOW}→${NC} Installing ly config..."
-    sudo mkdir -p /etc/ly
-    sudo cp "$DOTFILES_DIR/ly/config.ini" /etc/ly/config.ini
-    echo -e "${GREEN}✓${NC} ly config installed"
-fi
-if systemctl is-enabled ly@tty1 &>/dev/null; then
-    echo -e "${GREEN}✓${NC} ly service already enabled"
-else
-    echo -e "${YELLOW}→${NC} Enabling ly service..."
-    sudo systemctl enable ly@tty1
-    echo -e "${GREEN}✓${NC} ly service enabled (will start on next boot)"
-fi
+# Login is Omarchy's (seatd + uwsm autologin); no display manager is installed.
 
 # SMB mounts (Unraid NAS + Home Assistant)
 if [[ -f "$DOTFILES_DIR/smb/fstab.smb" ]]; then
@@ -664,10 +618,9 @@ fi
 
 # ── Web Apps ────────────────────────────────────────────────────────
 
-WEBAPP_SCRIPT="$HOME/.config/sway/scripts/webapp"
-if [[ -x "$WEBAPP_SCRIPT" ]]; then
+if command -v omarchy-webapp-install &>/dev/null; then
     echo -e "${YELLOW}→${NC} Installing web apps..."
-    "$WEBAPP_SCRIPT" install "Oak Hill Software" "https://oakhillsoftware.app"
+    omarchy-webapp-install "Oak Hill Software" "https://oakhillsoftware.app" || true
     echo -e "${GREEN}✓${NC} Web apps installed"
 fi
 
@@ -690,10 +643,10 @@ for svc in NetworkManager docker power-profiles-daemon; do
     fi
 done
 
-if systemctl is-enabled ly@tty1 &>/dev/null; then
-    echo -e "${GREEN}✓${NC} ly display manager enabled"
+if command -v omarchy &>/dev/null; then
+    echo -e "${GREEN}✓${NC} omarchy $(omarchy version 2>/dev/null)"
 else
-    echo -e "${RED}✗${NC} ly display manager not enabled"
+    echo -e "${RED}✗${NC} omarchy not found — this branch expects a stock Omarchy install"
     validation_ok=false
 fi
 
@@ -705,7 +658,7 @@ for svc in pipewire pipewire-pulse wireplumber; do
     fi
 done
 
-for cmd in sway waybar ghostty tmux zsh stow kanshi; do
+for cmd in hyprctl ghostty tmux zsh stow jq launch-or-open popup-tui; do
     if command -v "$cmd" &>/dev/null; then
         echo -e "${GREEN}✓${NC} $cmd available"
     else
@@ -734,7 +687,7 @@ echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 echo -e "${YELLOW}Manual steps remaining:${NC}"
 echo -e "  1. Log out and back in (docker group + shell change)"
-echo -e "  2. Configure monitor profiles in ~/.config/kanshi/config"
+echo -e "  2. Configure displays in ~/.config/hypr/monitors.lua (hyprctl monitors all)"
 echo -e "  3. Resolve any stow conflicts printed above"
 echo -e "  4. In tmux: prefix + I (if tpm plugin install didn't run)"
 echo -e "  5. Move snapshots to dedicated SSD (see README → Snapshots & Backup)"

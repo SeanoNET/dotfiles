@@ -1,0 +1,37 @@
+#!/bin/bash
+# Launch an app on a target workspace if no instance exists,
+# otherwise launch a new instance on the current workspace.
+#
+# Usage: launch-or-open <class-regex> <workspace> <command...>
+#
+# Ported from the sway version: swaymsg tree queries become hyprctl clients
+# queries, and the post-launch "move to workspace" polling loop becomes a
+# Hyprland exec rule, which the compositor applies to the window the command
+# maps. Hyprland 0.56 takes Lua dispatchers over hyprctl, not the legacy
+# string form.
+
+set -uo pipefail
+
+if (($# < 3)); then
+    echo "Usage: launch-or-open <class-regex> <workspace> <command...>" >&2
+    exit 1
+fi
+
+match="$1"
+workspace="$2"
+shift 2
+
+# Check for an existing window (Hyprland reports XWayland classes here too)
+if hyprctl clients -j | jq -e --arg m "$match" \
+    'any(.[]; (.class // "") | test($m; "i"))' >/dev/null 2>&1; then
+    exec setsid uwsm-app -- "$@"
+fi
+
+# No existing window — open it on the target workspace and follow it there.
+# Hyprland runs the exec through a shell, so requote the arguments rather than
+# flattening them with $*; long brackets then keep the result out of Lua's
+# string-escaping rules.
+printf -v cmdline '%q ' "$@"
+
+hyprctl dispatch "hl.dsp.exec_cmd([==[uwsm-app -- ${cmdline}]==], { workspace = \"$workspace\" })" >/dev/null
+hyprctl dispatch "hl.dsp.focus({ workspace = \"$workspace\" })" >/dev/null

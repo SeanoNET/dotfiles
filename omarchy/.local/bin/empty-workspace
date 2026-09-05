@@ -1,0 +1,15 @@
+#!/bin/bash
+# Switch to the lowest-numbered workspace that has no windows on it.
+# Ported from the sway version (empty_workspace).
+
+set -uo pipefail
+
+MAX_WORKSPACES=20
+
+occupied="$(hyprctl workspaces -j | jq -r '.[] | select(.windows > 0) | .id')"
+
+for n in $(seq 1 "$MAX_WORKSPACES"); do
+    if ! grep -qx "$n" <<<"$occupied"; then
+        exec hyprctl dispatch "hl.dsp.focus({ workspace = \"$n\" })"
+    fi
+done

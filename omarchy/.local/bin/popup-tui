@@ -1,0 +1,55 @@
+#!/bin/bash
+# Launch a TUI app in a centered floating popup terminal.
+# If a popup for the same command already exists, focus it instead.
+#
+# Usage: popup-tui [--size WxH] <command> [args...]
+#
+# Floating and the default size come from the com.popup.* window rules in
+# ~/.config/hypr/windows.lua; --size overrides the size for one popup.
+#
+# Ghostty is launched directly rather than through xdg-terminal-exec: it
+# ignores --app-id, and its single-instance mode would otherwise hand the
+# window back under the shared com.mitchellh.ghostty class, which both the
+# window rules and the focus lookup below key off.
+
+set -uo pipefail
+
+width="" height=""
+if [[ ${1:-} == "--size" ]]; then
+    width="${2%x*}"
+    height="${2#*x}"
+    shift 2
+fi
+
+if (($# < 1)); then
+    echo "Usage: popup-tui [--size WxH] <command> [args...]" >&2
+    exit 1
+fi
+
+app_id="com.popup.$(basename "$1")"
+
+address_of() {
+    hyprctl clients -j | jq -r --arg id "$app_id" \
+        'first(.[] | select(.class == $id) | .address) // empty'
+}
+
+# Focus the existing popup if one is already open
+addr="$(address_of)"
+if [[ -n $addr ]]; then
+    exec hyprctl dispatch "hl.dsp.focus({ window = \"address:$addr\" })"
+fi
+
+setsid ghostty --class="$app_id" --gtk-single-instance=false -e "$@" >/dev/null 2>&1 &
+
+[[ -n $width ]] || exit 0
+
+# Wait for the window to map, then apply the caller's size. Omitting `relative`
+# makes the resize absolute.
+for _ in {1..40}; do
+    sleep 0.1
+    addr="$(address_of)"
+    [[ -n $addr ]] || continue
+    hyprctl dispatch "hl.dsp.window.resize({ x = $width, y = $height, window = \"address:$addr\" })" >/dev/null
+    hyprctl dispatch "hl.dsp.window.center({ window = \"address:$addr\" })" >/dev/null
+    break
+done

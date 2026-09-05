@@ -1,21 +1,23 @@
 # Dotfiles
 
-Arch Linux (CachyOS) desktop environment built on **Sway** (Wayland), **Ghostty**, **Tmux** (Tokyo Night theme), and **Waybar**. Managed with [GNU Stow](https://www.gnu.org/software/stow/).
+Personal layer on top of [**Omarchy**](https://omarchy.org/) (Arch + Hyprland), with **Ghostty** and **Tmux**. Managed with [GNU Stow](https://www.gnu.org/software/stow/).
+
+Omarchy provides the compositor, shell (bar/notifications/menus), theming, login, screenshots and clipboard history. This repo layers on personal packages, Hyprland overrides that restore the sway keymap from the `wayland` branch, and the usual terminal/editor/shell configs.
 
 ## Quick Start
 
-### One-liner (fresh Arch/EndeavourOS machine)
+### One-liner (fresh Omarchy machine)
 
 ```bash
-bash <(curl -s https://raw.githubusercontent.com/SeanoNET/dotfiles/wayland/bootstrap-packages.sh)
+bash <(curl -s https://raw.githubusercontent.com/SeanoNET/dotfiles/omarchy/bootstrap-packages.sh)
 ```
 
-Installs all packages (official, AUR, flatpak), fonts, CLI tools, shell setup, stow symlinks, and post-install config in one shot.
+Installs the packages Omarchy doesn't ship (official, AUR, flatpak), fonts, CLI tools, shell setup, stow symlinks, and post-install config in one shot.
 
 ### Manual setup
 
 ```bash
-git clone -b wayland https://github.com/SeanoNET/dotfiles.git ~/dotfiles
+git clone -b omarchy https://github.com/SeanoNET/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 ./bootstrap-packages.sh
 ```
@@ -26,13 +28,14 @@ cd ~/dotfiles
 
 | Layer | Tool |
 |-------|------|
-| Window Manager | Sway |
-| Status Bar | Waybar (Tokyo Night theme, pill modules) |
+| Base | Omarchy (Arch Linux) |
+| Window Manager | Hyprland |
+| Status Bar / Notifications / Menus | Omarchy shell (Quickshell) |
 | Terminal | Ghostty |
 | Multiplexer | Tmux (Tokyo Night theme, prefix: `Ctrl+Space`) |
 | Shell | Zsh + Oh My Zsh + Zinit |
 | Prompt | Starship |
-| App Launcher | Vicinae |
+| App Launcher | Omarchy menu (`Super+Space`) |
 | Browser | Zen Browser |
 | File Manager | Nautilus / Yazi (TUI) |
 | Editor | Neovim (LazyVim) / Zed / VS Code |
@@ -40,118 +43,114 @@ cd ~/dotfiles
 | Audio | PipeWire + WirePlumber + Wiremix (TUI) |
 | Bluetooth | Bluetuith (TUI) |
 | Music | spotify-player (TUI) |
-| Clipboard | cliphist (wl-clipboard) |
-| Lock Screen | swaylock |
-| Web Apps | Chromium --app mode |
+| Clipboard | Omarchy clipboard manager |
+| Lock Screen | Omarchy (hyprlock) |
+| Web Apps | `omarchy webapp install` |
 
 ---
 
-## Sway Keybindings
+## Keybindings
 
-`Mod` = Super/Windows key
+`Mod` = Super/Windows key.
 
-### Essentials
+Omarchy's defaults stay in place except where they collided with the sway
+keymap this config came from. Every override lives in
+[`hypr/.config/hypr/bindings.lua`](hypr/.config/hypr/bindings.lua), each one
+annotated with what Omarchy had on that key and where it moved to.
+
+Print the full live map (Omarchy defaults + these overrides) with:
+
+```bash
+omarchy menu keybindings --print
+```
+
+### Overridden from Omarchy defaults
+
+| Key | Action | Omarchy default (moved to) |
+|-----|--------|----------------------------|
+| `Mod+q` | Close window | was `Mod+w` |
+| `Mod+w` | Browser (zen, workspace 2) | Close window (→ `Mod+q`) |
+| `Mod+h/j/k/l` | Focus left/down/up/right | `j` split, `k` keybindings (→ `Mod+F1`), `l` layout (→ `Mod+Alt+l`) |
+| `Mod+Shift+h/j/k/l` | Swap window left/down/up/right | — |
+| `Mod+Return` | Terminal + tmux, pinned to workspace 1 | Terminal |
+| `Mod+e` | Editor (Zed, workspace 1) | — (Omarchy's editor was `Mod+Shift+n`) |
+| `Mod+n` | File manager (workspace 3) | — |
+| `Mod+m` | Music TUI popup | — |
+| `Mod+d` | Apps menu | — |
+| `Mod+t` | Focus tablet (scrcpy) | Toggle floating (→ `Mod+Shift+Space`) |
+| `Mod+r` | Resize mode (`hjkl`/arrows, `Esc`/`Return` to exit) | — |
+| `Mod+v` | Clipboard manager | Universal paste (dropped) |
+| `Mod+\` | Toggle window split | was `Mod+j` |
+| `Mod+Tab` | Former workspace | Next workspace (→ `Mod+Ctrl+Tab`) |
+| `Mod+Ctrl+Tab` | Next workspace | Former workspace (→ `Mod+Tab`) |
+| `Mod+F1` | Keybindings cheatsheet | was `Mod+k` |
+| `Mod+Shift+Space` | Toggle floating/tiling | Toggle top bar (→ `Mod+Shift+Alt+Space`) |
+| `Mod+Shift+n` | Open next empty workspace | Editor (→ `Mod+e`) |
+| `Mod+Shift+s` | Screenshot region to clipboard | Google Maps (dropped) |
+| `Mod+Shift+x` | Lock screen | X webapp (dropped) |
+| `Mod+Shift+p` | Power menu | Google Photos (dropped) |
+| `Mod+Shift+r` | Reload Hyprland config | — |
+
+### Kept from Omarchy
+
+These already matched the sway map, or were close enough to keep:
 
 | Key | Action |
 |-----|--------|
-| `Mod+Return` | Terminal (ghostty + tmux) |
-| `Mod+d` | App launcher (vicinae) |
-| `Mod+w` | Browser (zen-browser) |
-| `Mod+n` | File manager (nautilus) |
-| `Mod+q` | Kill focused window |
-| `Mod+Shift+r` | Reload sway config |
-| `Mod+Shift+x` | Lock screen |
-| `Mod+F1` | Keybinding cheatsheet |
-
-### Navigation
-
-| Key | Action |
-|-----|--------|
-| `Mod+h/j/k/l` | Focus left/down/up/right |
-| `Mod+Shift+h/j/k/l` | Move window left/down/up/right |
+| `Mod+f` | Fullscreen |
+| `Mod+s` | Toggle scratchpad |
+| `Mod+g` | Toggle window grouping (sway's tabbed layout) |
+| `Mod+Space` | Omarchy menu |
 | `Mod+1-0` | Switch to workspace 1-10 |
 | `Mod+Shift+1-0` | Move window to workspace 1-10 |
-| `Mod+Tab` | Toggle last workspace |
-| `Mod+Shift+n` | Open new empty workspace |
+| `Mod+Shift+Tab` | Previous workspace |
+| `Mod+arrows` | Focus left/down/up/right |
+| `Mod+Shift+arrows` | Swap window |
+| `Print` | Screenshot |
+| `XF86Audio*` / `XF86MonBrightness*` | Volume, media and brightness |
 
-### Layout
+### Not carried over
 
-| Key | Action |
-|-----|--------|
-| `Mod+e` | Cycle layout (split h/v, tabbed, stacking) |
-| `Mod+f` | Toggle fullscreen |
-| `Mod+\` | Split horizontal |
-| `Mod+-` | Split vertical |
-| `Mod+Shift+Space` | Toggle floating |
-| `Mod+r` | Resize mode (h/j/k/l to resize, Esc to exit) |
-| `Mod+Space` | Toggle scratchpad terminal |
-
-### Media / Screenshots
-
-| Key | Action |
-|-----|--------|
-| `XF86Audio*` | Volume up/down/mute |
-| `XF86AudioPlay/Next/Prev` | Media controls (playerctl) |
-| `Print` | Screenshot (full screen, saved to ~/Pictures/) |
-| `Mod+Shift+s` | Screenshot (region to clipboard) |
-| `Mod+Shift+p` | Power profiles menu (rofi) |
-| `Mod+v` | Clipboard history (cliphist + rofi) |
+`Mod+a` (focus parent) and `Mod+s` (stacking layout) have no Hyprland
+equivalent. Grouping (`Mod+g`) covers the tabbed case.
 
 ---
 
-## Waybar Popup TUIs
+## Popup TUIs
 
-Click modules in the status bar to open TUI tools in centered floating popups:
+`popup-tui` opens a TUI in a centered floating Ghostty window, or focuses the
+existing one if it's already open:
 
-| Module | Left Click | Right Click |
-|--------|-----------|-------------|
-| Audio (pulseaudio) | Wiremix (audio mixer) | Toggle mute |
-| Bluetooth | Bluetuith | - |
-| Wifi / Ethernet | nmtui | - |
-| CPU | btop | - |
-| Memory | btop | - |
-| Spotify | Play/pause | spotify_player TUI |
+```bash
+popup-tui wiremix                    # default size (900x600)
+popup-tui --size 1400x800 spotify_player
+```
 
-Scroll on Spotify module for next/prev track.
+It launches Ghostty with a `com.popup.<name>` class, which the window rules in
+[`hypr/.config/hypr/windows.lua`](hypr/.config/hypr/windows.lua) match to float,
+centre and size the window. Bound to `Mod+m` for the music TUI.
 
-The popup system uses `sway/.config/sway/scripts/popup-tui.sh` which launches Ghostty with a custom `app_id` (`com.popup.<name>`) matched by sway floating rules.
+Omarchy's own bar panels cover the rest of what the waybar modules did:
+`Mod+Ctrl+a` audio, `Mod+Ctrl+b` bluetooth, `Mod+Ctrl+w` network,
+`Mod+Ctrl+t` activity (btop).
+
+### launch-or-open
+
+`launch-or-open <class-regex> <workspace> <command...>` puts the first instance
+of an app on a dedicated workspace and opens later instances on the current one.
+Used by the `Mod+Return`, `Mod+e`, `Mod+w` and `Mod+n` bindings.
 
 ---
 
 ## Web Apps
 
-Web apps run as frameless Chromium windows (no tabs, no address bar) that feel like native desktop apps. They appear in Vicinae like regular applications.
-
-### Install a web app
-
-```bash
-~/.config/sway/scripts/webapp install "App Name" "https://example.com"
-```
-
-This fetches a favicon and creates a `.desktop` file in `~/.local/share/applications/`.
-
-### Launch a web app
+Web apps run as frameless browser windows that feel like native desktop apps,
+and show up in the Omarchy apps menu (`Mod+d`).
 
 ```bash
-~/.config/sway/scripts/webapp launch "https://example.com"
-```
-
-Focuses the existing window if already open, or launches a new one.
-
-### List / Remove
-
-```bash
-~/.config/sway/scripts/webapp list
-~/.config/sway/scripts/webapp remove "App Name"
-```
-
-### Examples
-
-```bash
-webapp install "YouTube" "https://youtube.com"
-webapp install "GitHub" "https://github.com"
-webapp install "ChatGPT" "https://chatgpt.com"
-webapp install "Outlook" "https://outlook.office.com"
+omarchy webapp install "App Name" "https://example.com"
+omarchy webapp remove "App Name"
+omarchy launch webapp "https://example.com"
 ```
 
 ---
@@ -166,15 +165,13 @@ Each directory is a stow package that maps to `$HOME`:
 | `chromium` | Chromium Wayland flags (for web apps) |
 | `ghostty` | Terminal config (opacity, font, shell) |
 | `git` | Git config + delta pager |
-| `helix` | Modal text editor config |
+| `hypr` | Hyprland overrides on top of Omarchy's defaults |
 | `lazygit` | Git TUI config + keybindings |
-| `rofi` | Launcher/menu themes (powermenu, power-profiles) |
+| `nvim` | Neovim (LazyVim) config |
+| `omarchy` | Helper scripts (`launch-or-open`, `popup-tui`, `empty-workspace`) |
 | `starship` | Shell prompt config |
-| `sway` | Window manager config + scripts |
-| `swaylock` | Lock screen config |
-| `tmux` | Multiplexer config + Dracula theme |
+| `tmux` | Multiplexer config + Tokyo Night theme |
 | `vscode` | VS Code settings |
-| `waybar` | Status bar config + Dracula style |
 | `yazi` | Terminal file manager config |
 | `zed` | Code editor config |
 | `zsh` | Shell config (zinit, aliases, integrations) |
@@ -183,9 +180,9 @@ Each directory is a stow package that maps to `$HOME`:
 
 ```bash
 cd ~/dotfiles
-stow sway          # symlink sway config
-stow -D sway       # remove symlinks
-stow --restow sway # re-symlink (useful after changes)
+stow hypr          # symlink Hyprland overrides
+stow -D hypr       # remove symlinks
+stow --restow hypr # re-symlink (useful after changes)
 ```
 
 ---
