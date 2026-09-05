@@ -126,76 +126,48 @@ echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 
 OFFICIAL_PACKAGES=(
-    # Desktop extras Omarchy doesn't ship
-    "nautilus"
-    "chromium"
-    "imagemagick"
-
-    # Terminal
-    "tmux"
+    # Only packages Omarchy does NOT ship. Check before adding:
+    #   grep -x '<pkg>' /usr/share/omarchy/install/omarchy-base.packages
+    # Omarchy already provides the desktop, plus bat, btop, chromium, docker,
+    # eza, fd, fzf, git, imagemagick, jq, lazygit, nautilus, networkmanager,
+    # obsidian, pipewire, starship, tmux, wireplumber and zoxide.
 
     # Shell
     "zsh"
     "stow"
 
-    # Fonts
+    # Fonts (the nerd variant comes with omarchy; this is the plain family)
     "ttf-jetbrains-mono"
-    "ttf-jetbrains-mono-nerd"
 
     # CLI Tools
-    "fzf"
-    "zoxide"
-    "eza"
-    "neovim"
-    "bat"
     "glow"
     "git-delta"
     "playerctl"
     "yazi"
-    "lazygit"
-    "starship"
     "python"
-    "pacman-contrib"
 
     # Dev Tools
-    "docker"
-    "docker-compose"
     "github-cli"
     "kubectl"
     "kubectx"
-    "git"
 
     # Qt Theming
     "qt5ct"
     "qt6ct"
 
-    # Utilities
-    "jq"
-    "fd"
-    "btop"
-    "unzip"
-
-    # Audio (PipeWire stack)
-    "pipewire"
-    "pipewire-pulse"
-    "pipewire-audio"
-    "wireplumber"
+    # Audio / Networking front-ends
     "wiremix"
-
-    # Networking
-    "networkmanager"
     "nm-connection-editor"
 
     # Editors
     "code"
     "zed"
+    "neovim"
 
     # Apps
-    "spotify-player"
-    "obsidian"
-    "power-profiles-daemon"
-    "azure-cli"
     "ghostty"
+    "spotify-player"
+    "azure-cli"
     "scrcpy"
     "thunderbird"
 
@@ -495,31 +467,19 @@ CRED
     echo -e "${GREEN}✓${NC} SMB automount configured (mounts on first access)"
 fi
 
-# Docker service
-if systemctl is-enabled docker &>/dev/null; then
-    echo -e "${GREEN}✓${NC} Docker service already enabled"
-else
-    echo -e "${YELLOW}→${NC} Enabling Docker service..."
-    sudo systemctl enable --now docker
-    echo -e "${GREEN}✓${NC} Docker service enabled"
-fi
-
-# Docker group
+# Docker and power-profiles-daemon are enabled by Omarchy
+# (install/config/enable-services.sh), so nothing to do here.
+#
+# Omarchy deliberately does NOT put the user in the docker group: that group is
+# equivalent to passwordless root, since any member can `docker run -v /:/host`.
+# Don't re-add it here. To opt back in, behind Omarchy's own warning, run:
+#
+#   omarchy setup security sudoless-docker
 if groups | grep -q docker; then
-    echo -e "${GREEN}✓${NC} User already in docker group"
+    echo -e "${YELLOW}!${NC} User is in the docker group (≈ passwordless root)"
+    echo -e "    Omarchy leaves this off by default; remove with: sudo gpasswd -d $USER docker"
 else
-    echo -e "${YELLOW}→${NC} Adding user to docker group..."
-    sudo usermod -aG docker "$USER"
-    echo -e "${GREEN}✓${NC} User added to docker group"
-fi
-
-# power-profiles-daemon
-if systemctl is-enabled power-profiles-daemon &>/dev/null; then
-    echo -e "${GREEN}✓${NC} power-profiles-daemon already enabled"
-else
-    echo -e "${YELLOW}→${NC} Enabling power-profiles-daemon..."
-    sudo systemctl enable --now power-profiles-daemon
-    echo -e "${GREEN}✓${NC} power-profiles-daemon enabled"
+    echo -e "${GREEN}✓${NC} User not in docker group (Omarchy's default; docker runs under sudo)"
 fi
 
 # Change shell to zsh
@@ -569,14 +529,11 @@ done
 
 # ── Snapper (Btrfs Snapshots) ──────────────────────────────────────
 
+# Omarchy owns the root snapper config: it installs its own retention template
+# and deliberately disables snapper-timeline.timer in favour of
+# limine-snapper-sync (pre/post pacman snapshots). Don't fight that here — only
+# add the /home config, which Omarchy doesn't set up.
 if command -v snapper &>/dev/null; then
-    # Enable timeline snapshots for root
-    if snapper list-configs 2>/dev/null | grep -q "^root "; then
-        sudo sed -i 's/TIMELINE_CREATE="no"/TIMELINE_CREATE="yes"/' /etc/snapper/configs/root
-        sudo systemctl enable --now snapper-timeline.timer
-        echo -e "${GREEN}✓${NC} Snapper timeline snapshots enabled for /"
-    fi
-
     # Create snapper config for /home if it doesn't exist
     if snapper list-configs 2>/dev/null | grep -q "^home "; then
         echo -e "${GREEN}✓${NC} Snapper home config already exists"
@@ -587,8 +544,8 @@ if command -v snapper &>/dev/null; then
         echo -e "${GREEN}✓${NC} Snapper config created for /home"
     fi
 
-    sudo systemctl enable --now snapper-cleanup.timer
-    echo -e "${GREEN}✓${NC} Snapper cleanup timer enabled"
+    # snapper-cleanup.timer is already enabled by Omarchy
+    echo -e "${GREEN}✓${NC} Snapper cleanup timer managed by Omarchy"
 
     # Remind about dedicated snapshot drive
     if ! findmnt /.snapshots | grep -q "/dev/sd\|/dev/nvme" 2>/dev/null; then
@@ -634,7 +591,7 @@ echo ""
 
 validation_ok=true
 
-for svc in NetworkManager docker power-profiles-daemon; do
+for svc in NetworkManager docker.socket power-profiles-daemon; do
     if systemctl is-enabled "$svc" &>/dev/null; then
         echo -e "${GREEN}✓${NC} $svc enabled"
     else
@@ -686,7 +643,7 @@ echo -e "${GREEN}    Bootstrap complete!${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 echo -e "${YELLOW}Manual steps remaining:${NC}"
-echo -e "  1. Log out and back in (docker group + shell change)"
+echo -e "  1. Log out and back in (shell change)"
 echo -e "  2. Configure displays in ~/.config/hypr/monitors.lua (hyprctl monitors all)"
 echo -e "  3. Resolve any stow conflicts printed above"
 echo -e "  4. In tmux: prefix + I (if tpm plugin install didn't run)"
