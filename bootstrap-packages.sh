@@ -467,21 +467,6 @@ CRED
     echo -e "${GREEN}✓${NC} SMB automount configured (mounts on first access)"
 fi
 
-# Docker and power-profiles-daemon are enabled by Omarchy
-# (install/config/enable-services.sh), so nothing to do here.
-#
-# Omarchy deliberately does NOT put the user in the docker group: that group is
-# equivalent to passwordless root, since any member can `docker run -v /:/host`.
-# Don't re-add it here. To opt back in, behind Omarchy's own warning, run:
-#
-#   omarchy setup security sudoless-docker
-if groups | grep -q docker; then
-    echo -e "${YELLOW}!${NC} User is in the docker group (≈ passwordless root)"
-    echo -e "    Omarchy leaves this off by default; remove with: sudo gpasswd -d $USER docker"
-else
-    echo -e "${GREEN}✓${NC} User not in docker group (Omarchy's default; docker runs under sudo)"
-fi
-
 # Change shell to zsh
 if [[ "$SHELL" == *"zsh"* ]]; then
     echo -e "${GREEN}✓${NC} Default shell is already zsh"
@@ -527,35 +512,10 @@ for plugin in "${TMUX_PLUGINS[@]}"; do
     fi
 done
 
-# ── Snapper (Btrfs Snapshots) ──────────────────────────────────────
-
-# Omarchy owns the root snapper config: it installs its own retention template
-# and deliberately disables snapper-timeline.timer in favour of
-# limine-snapper-sync (pre/post pacman snapshots). Don't fight that here — only
-# add the /home config, which Omarchy doesn't set up.
-if command -v snapper &>/dev/null; then
-    # Create snapper config for /home if it doesn't exist
-    if snapper list-configs 2>/dev/null | grep -q "^home "; then
-        echo -e "${GREEN}✓${NC} Snapper home config already exists"
-    else
-        echo -e "${YELLOW}→${NC} Creating snapper config for /home..."
-        sudo snapper -c home create-config /home
-        sudo sed -i 's/TIMELINE_CREATE="no"/TIMELINE_CREATE="yes"/' /etc/snapper/configs/home
-        echo -e "${GREEN}✓${NC} Snapper config created for /home"
-    fi
-
-    # snapper-cleanup.timer is already enabled by Omarchy
-    echo -e "${GREEN}✓${NC} Snapper cleanup timer managed by Omarchy"
-
-    # Remind about dedicated snapshot drive
-    if ! findmnt /.snapshots | grep -q "/dev/sd\|/dev/nvme" 2>/dev/null; then
-        echo -e "${YELLOW}⚠${NC} Snapshots are stored on the root partition. Consider moving to a dedicated drive (see README)."
-    fi
-else
-    echo -e "${YELLOW}⚠${NC} snapper not found, skipping snapshot setup"
-fi
-
 # ── Snapshot Backup to Unraid ─────────────────────────────────────
+# Offsite copy only — snapshot creation and retention are Omarchy's
+# (limine-snapper-sync + snapper-cleanup.timer). This rsyncs whatever snapper
+# configs exist to the NAS and skips any that don't.
 if [[ -f "$DOTFILES_DIR/smb/snapshot-backup.sh" ]] && command -v snapper &>/dev/null; then
     echo -e "${YELLOW}→${NC} Setting up snapshot backup to Unraid..."
     sudo cp "$DOTFILES_DIR/smb/snapshot-backup.sh" /usr/local/bin/snapshot-backup.sh
@@ -647,5 +607,5 @@ echo -e "  1. Log out and back in (shell change)"
 echo -e "  2. Configure displays in ~/.config/hypr/monitors.lua (hyprctl monitors all)"
 echo -e "  3. Resolve any stow conflicts printed above"
 echo -e "  4. In tmux: prefix + I (if tpm plugin install didn't run)"
-echo -e "  5. Move snapshots to dedicated SSD (see README → Snapshots & Backup)"
+echo -e "  5. Fill in /etc/samba/credentials/{unraid,hass} if SMB mounts are wanted"
 echo ""
