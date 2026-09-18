@@ -50,3 +50,4 @@ cursor-style = block
 cursor-style-blink = true
 # window-decoration = none
 confirm-close-surface = false
+theme = TokyoNight Storm

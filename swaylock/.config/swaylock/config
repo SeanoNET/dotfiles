@@ -1,0 +1,47 @@
+daemonize
+show-failed-attempts
+ignore-empty-password
+
+# Screenshot + blur
+screenshots
+effect-blur=20x6
+effect-vignette=0.5:0.5
+fade-in=0.2
+
+# Clock
+clock
+timestr=%H:%M
+datestr=%A, %B %e
+
+# Indicator
+indicator
+indicator-radius=100
+indicator-thickness=10
+indicator-idle-visible
+
+# Colors (Tokyo Night Storm)
+inside-color=24283b80
+ring-color=7aa2f7ff
+key-hl-color=bb9af7ff
+line-color=00000000
+separator-color=00000000
+text-color=c0caf5ff
+
+# Wrong password
+inside-wrong-color=f7768e80
+ring-wrong-color=f7768eff
+text-wrong-color=c0caf5ff
+
+# Verifying
+inside-ver-color=7aa2f780
+ring-ver-color=7aa2f7ff
+text-ver-color=c0caf5ff
+
+# Clear
+inside-clear-color=e0af6880
+ring-clear-color=e0af68ff
+text-clear-color=c0caf5ff
+
+# Font
+font=JetBrains Mono
+font-size=24

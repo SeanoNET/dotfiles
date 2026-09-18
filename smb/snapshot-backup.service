@@ -1,0 +1,10 @@
+[Unit]
+Description=Backup btrfs snapshots to Unraid
+After=network-online.target remote-fs.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/snapshot-backup.sh
+Nice=19
+IOSchedulingClass=idle

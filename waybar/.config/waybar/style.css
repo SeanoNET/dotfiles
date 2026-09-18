@@ -1,0 +1,235 @@
+/* Waybar Style — Tokyo Night Storm floating bar
+ * bg:      #24283b  fg:      #c0caf5  current: #414868  comment: #565f89
+ * cyan:    #7dcfff  green:   #9ece6a  orange:  #ff9e64
+ * purple:  #7aa2f7  red:     #f7768e
+ * yellow:  #e0af68
+ */
+
+* {
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-size: 12px;
+    border: none;
+    border-radius: 0;
+    min-height: 0;
+}
+
+/* ---- Floating bar ---- */
+
+window#waybar {
+    background: rgba(36, 40, 59, 0.92);
+    border-radius: 14px;
+    border: 1px solid rgba(86, 95, 137, 0.35);
+    color: #c0caf5;
+}
+
+/* ---- Module pills (unified muted style) ---- */
+
+#custom-spotify,
+#custom-pacman,
+#temperature,
+#pulseaudio,
+#bluetooth,
+#network,
+#battery,
+#disk,
+#memory,
+#cpu,
+#clock,
+#custom-power {
+    color: #c0caf5;
+    background: rgba(65, 72, 104, 0.35);
+    border-radius: 10px;
+    padding: 1px 8px;
+    margin: 3px 2px;
+    border-left: 3px solid rgba(86, 95, 137, 0.3);
+    transition: all 200ms ease;
+}
+
+/* ---- Separators ---- */
+
+#custom-sep {
+    color: rgba(86, 95, 137, 0.4);
+    font-size: 13px;
+    padding: 0 1px;
+    margin: 3px 4px;
+}
+
+/* ---- Hover ---- */
+
+#custom-spotify:hover,
+#custom-pacman:hover,
+#pulseaudio:hover,
+#bluetooth:hover,
+#network:hover,
+#cpu:hover,
+#memory:hover,
+#disk:hover,
+#clock:hover,
+#custom-power:hover {
+    background: rgba(65, 72, 104, 0.7);
+    border-left-color: #7aa2f7;
+    color: #c0caf5;
+}
+
+/* ---- Left: workspaces ---- */
+
+#workspaces {
+    margin: 3px 2px 3px 4px;
+    background: rgba(65, 72, 104, 0.3);
+    border-radius: 10px;
+    padding: 0 2px;
+}
+
+#workspaces button {
+    padding: 0 10px;
+    margin: 2px 1px;
+    color: #565f89;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    transition: all 200ms ease;
+}
+
+#workspaces button:hover {
+    background: rgba(122, 162, 247, 0.25);
+    color: #c0caf5;
+}
+
+#workspaces button.focused,
+#workspaces button.active {
+    background: #7aa2f7;
+    color: #24283b;
+    font-weight: bold;
+}
+
+#workspaces button.urgent {
+    background: #f7768e;
+    color: #c0caf5;
+}
+
+/* ---- Left: mode ---- */
+
+#mode {
+    background: #7aa2f7;
+    color: #24283b;
+    border-radius: 10px;
+    padding: 1px 10px;
+    margin: 3px 2px;
+    font-weight: bold;
+}
+
+/* ---- Center ---- */
+
+#window {
+    color: #999;
+    padding: 0 12px;
+    font-style: italic;
+}
+
+/* ---- Tray ---- */
+
+#tray {
+    padding: 0 6px;
+    margin: 3px 2px;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+}
+
+/* ---- Clock (subtle accent — the anchor module) ---- */
+
+#clock {
+    color: #c0caf5;
+    border-left-color: #7aa2f7;
+    font-weight: bold;
+}
+
+/* ---- State-based colors (only when something needs attention) ---- */
+
+#temperature.critical {
+    color: #f7768e;
+    background: rgba(247, 118, 142, 0.2);
+    border-left-color: #f7768e;
+}
+
+#battery.warning:not(.charging) {
+    color: #ff9e64;
+    background: rgba(255, 158, 100, 0.15);
+    border-left-color: #ff9e64;
+}
+
+#battery.critical:not(.charging) {
+    color: #f7768e;
+    background: rgba(247, 118, 142, 0.2);
+    border-left-color: #f7768e;
+    animation: blink 1s ease-in-out infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0.6; }
+}
+
+#network.disconnected {
+    color: #565f89;
+    background: rgba(65, 72, 104, 0.2);
+    border-left-color: transparent;
+}
+
+#bluetooth.off {
+    color: #565f89;
+    background: rgba(65, 72, 104, 0.2);
+    border-left-color: transparent;
+}
+
+#pulseaudio.muted {
+    color: #565f89;
+    background: rgba(65, 72, 104, 0.2);
+    border-left-color: transparent;
+}
+
+/* ---- Spotify (subtle green only for media) ---- */
+
+#custom-spotify {
+    color: #9ece6a;
+    border-left-color: rgba(158, 206, 106, 0.4);
+}
+
+/* ---- Updates badge ---- */
+
+#custom-pacman {
+    color: #e0af68;
+    border-left-color: rgba(224, 175, 104, 0.4);
+}
+
+/* ---- Power button ---- */
+
+#custom-power {
+    color: #f7768e;
+    background: rgba(247, 118, 142, 0.08);
+    border-left-color: rgba(247, 118, 142, 0.3);
+    margin-right: 4px;
+}
+
+#custom-power:hover {
+    background: rgba(247, 118, 142, 0.25);
+    border-left-color: #f7768e;
+}
+
+/* ---- Tooltip ---- */
+
+tooltip {
+    background: rgba(36, 40, 59, 0.95);
+    border: 1px solid rgba(86, 95, 137, 0.5);
+    border-radius: 10px;
+    color: #c0caf5;
+}
+
+tooltip label {
+    color: #c0caf5;
+    padding: 4px 8px;
+}

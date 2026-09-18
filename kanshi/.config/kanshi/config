@@ -1,0 +1,21 @@
+# kanshi — automatic monitor profile switching
+# See `man kanshi` for configuration reference
+# Use `swaymsg -t get_outputs` to find output names and modes
+
+# Laptop only (undocked)
+profile undocked {
+    output eDP-1 enable mode 1920x1080@60Hz position 0,0 scale 1
+}
+
+# Docked — dual monitor (adjust output names and positions for your setup)
+# profile docked {
+#     output eDP-1 disable
+#     output DP-1 enable mode 3440x1440@144Hz position 0,0
+#     output HDMI-A-1 enable mode 1920x1080@60Hz position 3440,0
+# }
+
+# Desktop — dual monitor
+# profile desktop {
+#     output DP-1 enable mode 3440x1440@240Hz position 0,0
+#     output HDMI-A-1 enable mode 1920x1080@60Hz position 3440,0
+# }

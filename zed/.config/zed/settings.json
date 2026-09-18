@@ -7,6 +7,9 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "auto_install_extensions": {
+    "tokyo-night": true
+  },
   "telemetry": {
     "metrics": false
   },
@@ -26,8 +29,8 @@
   "buffer_font_size": 17.0,
   "theme": {
     "mode": "dark",
-    "light": "Nord",
-    "dark": "One Dark"
+    "light": "Tokyo Night Light",
+    "dark": "Tokyo Night Storm"
   },
   "base_keymap": "VSCode",
   "cursor_shape": "block",

@@ -1,3 +1,8 @@
+# Auto-start tmux
+if command -v tmux &>/dev/null && [[ -z "$TMUX" && -z "$INSIDE_EMACS" && -z "$VSCODE_RESOLVING_ENVIRONMENT" ]]; then
+    exec tmux new-session -A -s main
+fi
+
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 
@@ -14,7 +19,9 @@ export PATH="$HOME/.dotnet:$HOME/.dotnet/tools:$PATH"
 # Set the directory we want to store zinit and plugins
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
-export SUDO_EDITOR=$(which helix) 
+export SUDO_EDITOR=$(which nvim)
+export EDITOR=nvim
+export VISUAL=nvim
 
 # Download Zinit, if it's not there yet
 if [ ! -d "$ZINIT_HOME" ]; then

@@ -1,0 +1,8 @@
+# Unraid NAS shares
+//10.0.0.200/Backups  /mnt/unraid/backups  cifs  credentials=/etc/samba/credentials/unraid,uid=1000,gid=1000,iocharset=utf8,vers=3.0,x-systemd.automount,noauto,x-systemd.idle-timeout=120,x-systemd.mount-timeout=30  0  0
+//10.0.0.200/Appdata  /mnt/unraid/appdata  cifs  credentials=/etc/samba/credentials/unraid,uid=1000,gid=1000,iocharset=utf8,vers=3.0,x-systemd.automount,noauto,x-systemd.idle-timeout=120,x-systemd.mount-timeout=30  0  0
+//10.0.0.200/Media    /mnt/unraid/media    cifs  credentials=/etc/samba/credentials/unraid,uid=1000,gid=1000,iocharset=utf8,vers=3.0,x-systemd.automount,noauto,x-systemd.idle-timeout=120,x-systemd.mount-timeout=30  0  0
+//10.0.0.200/Share    /mnt/unraid/share    cifs  credentials=/etc/samba/credentials/unraid,uid=1000,gid=1000,iocharset=utf8,vers=3.0,x-systemd.automount,noauto,x-systemd.idle-timeout=120,x-systemd.mount-timeout=30  0  0
+
+# Home Assistant config
+//10.0.0.218/config   /mnt/hass-config     cifs  credentials=/etc/samba/credentials/hass,iocharset=utf8,vers=3.0,x-systemd.automount,noauto,x-systemd.idle-timeout=120,x-systemd.mount-timeout=30  0  0
