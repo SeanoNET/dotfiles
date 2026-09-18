@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# Hermes backend tunnel.
+#
+# Forwards the Hermes gateway API and dashboard from 10.0.0.118 to localhost,
+# so hermes-workspace's default URLs work with no config changes:
+#
+#   HERMES_API_URL        -> http://127.0.0.1:8642   (chat completions, models)
+#   HERMES_DASHBOARD_URL  -> http://127.0.0.1:9119   (sessions, skills, config, cron)
+#
+# Both services are bound to loopback on the remote host on purpose: a
+# non-loopback bind makes the dashboard demand OAuth, and it puts a
+# shell-capable API on the LAN in cleartext. SSH gives us encryption and
+# auth for free.
+#
+# Usage:  hermes-tunnel            (Ctrl-C to stop)
+#         HERMES_HOST=hermes@1.2.3.4 hermes-tunnel
+
+set -euo pipefail
+
+REMOTE="${HERMES_HOST:-hermes@10.0.0.118}"
+
+trap 'printf "\ntunnel closed.\n"; exit 0' INT TERM
+
+# Refuse to start a second copy — ssh would fail on the bind and the retry
+# loop below would spin forever.
+for port in 8642 9119; do
+  if ss -tln 2>/dev/null | grep -q "127\.0\.0\.1:${port} "; then
+    echo "error: 127.0.0.1:${port} is already bound — tunnel already running?" >&2
+    echo "       check with: ss -tlnp | grep -E '8642|9119'" >&2
+    exit 1
+  fi
+done
+
+echo "hermes tunnel -> ${REMOTE}"
+echo "  127.0.0.1:8642  gateway API"
+echo "  127.0.0.1:9119  dashboard"
+echo "Ctrl-C to stop."
+
+while :; do
+  ssh -N \
+    -L 8642:127.0.0.1:8642 \
+    -L 9119:127.0.0.1:9119 \
+    -o ExitOnForwardFailure=yes \
+    -o ServerAliveInterval=30 \
+    -o ServerAliveCountMax=3 \
+    "${REMOTE}" || true
+
+  echo "tunnel dropped — reconnecting in 5s" >&2
+  sleep 5
+done

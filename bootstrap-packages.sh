@@ -318,6 +318,7 @@ BACKUP_DIR="$HOME/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)"
 STOW_PACKAGES=(
     alacritty
     background
+    bin
     ghostty
     git
     helix
