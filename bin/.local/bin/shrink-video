@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# H.264 100Mbps -> HEVC CRF 26. Originals untouched; verify, then delete them yourself.
+set -euo pipefail
+cd "${1:-.}"
+CRF=${CRF:-26}
+out=hevc; mkdir -p "$out"
+
+shopt -s nullglob
+files=(*.MP4 *.mp4); n=${#files[@]}; i=0
+
+for f in "${files[@]}"; do
+  dst="$out/${f%.*}.mp4"
+  i=$((i+1))
+  [ -s "$dst" ] && { echo "[$i/$n] skip $f (already done)"; continue; }
+  echo "[$i/$n] $f -> $dst"
+
+  ffmpeg -hide_banner -loglevel warning -stats -y -i "$f" \
+    -map 0:v -map "0:s?" -c:s copy -map_metadata 0 \
+    -c:v libx265 -crf "$CRF" -preset slow -tag:v hvc1 -f mp4 "$dst.part"
+
+  # verify: duration within 1s of source, else bail loudly
+  a=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$f")
+  b=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$dst.part")
+  awk -v a="$a" -v b="$b" 'BEGIN{exit (a-b<1 && b-a<1) ? 0 : 1}' \
+    || { echo "FAIL $f: $a s -> $b s"; exit 1; }
+
+  mv "$dst.part" "$dst"
+  touch -r "$f" "$dst"
+  printf '[%s/%s] done %s: %s MB -> %s MB\n' "$i" "$n" "$f" \
+    $(( $(stat -c%s "$f")/1048576 )) $(( $(stat -c%s "$dst")/1048576 ))
+done
