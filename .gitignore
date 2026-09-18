@@ -1,0 +1,11 @@
+# Merge/backup artifacts
+*.orig
+
+# Saved render of the OakMoney app (transaction amounts + build output).
+# This repo is public — keep it out.
+background/.config/backdrops/OakMoneyyou.html
+background/.config/backdrops/OakMoneyyou_files/
+
+# Orphaned manual clone; tmux.conf uses dracula/tmux and the declared
+# plugins are submodules. Re-clone from upstream if ever needed.
+tmux/.config/tmux/plugins/tokyo-night-tmux/

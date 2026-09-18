@@ -53,7 +53,15 @@ exec --no-startup-id alacritty --class scratchpad-term
 
 # kill any hanging polybar processes
 exec_always killall polybar
+# Also starts snixembed, which bridges StatusNotifierItem tray icons (Proton VPN,
+# Nextcloud, 1Password) to the XEmbed tray polybar speaks. It lives in there
+# because it exits unless a tray already owns the X selection.
 exec_always --no-startup-id sh ~/.config/polybar/launch_polybar.sh
+
+# Waits for snixembed's StatusNotifierWatcher before launching. The app probes
+# for it exactly once and silently drops its tray icon if it is missing - which
+# with --start-minimized means the window just vanishes on startup.
+exec --no-startup-id ~/.config/i3/scripts/start-protonvpn.sh
 
 
 # Dictate keybindings
@@ -132,7 +140,7 @@ bindsym $mod+space exec --no-startup-id ~/.config/i3/scripts/scratchpad-toggle.s
 
 # switch/iterate between workspaces
 workspace_auto_back_and_forth yes
-bindsym $mod+Tab workspace back_and_forth
+bindsym $mod+grave workspace $wsp
 bindsym $mod+Shift+Tab workspace prev
 bindsym $mod+Ctrl+Tab workspace next
 
@@ -142,6 +150,10 @@ bindsym $mod+2 workspace $ws2
 bindsym $mod+3 workspace $ws3
 bindsym $mod+4 workspace $ws4
 bindsym $mod+5 workspace $ws5
+bindsym $mod+6 workspace $wsp
+
+# Quick toggle to the parsec remote workspace
+bindsym $mod+r workspace $wsp
 
 # Quick jump: code / browser
 bindsym $mod+c workspace $ws1
@@ -157,6 +169,7 @@ bindsym $mod+Shift+2 move container to workspace $ws2
 bindsym $mod+Shift+3 move container to workspace $ws3
 bindsym $mod+Shift+4 move container to workspace $ws4
 bindsym $mod+Shift+5 move container to workspace $ws5
+bindsym $mod+Shift+6 move container to workspace $wsp
 
 
 ######################################
@@ -289,6 +302,7 @@ set $ws2 "2:web"
 set $ws3 "3:files"
 set $ws4 "4:mail"
 set $ws5 "5"
+set $wsp "6:parsec"
 
 # use workspaces on different displays:
 # where you have to replace VGA-0/HDMI-0 with the names for your displays
@@ -298,6 +312,7 @@ workspace $ws2 output DisplayPort-0
 workspace $ws3 output DisplayPort-0
 workspace $ws4 output HDMI-A-0
 workspace $ws5 output DisplayPort-0
+workspace $wsp output DisplayPort-0
 
 # bind program to workspace and focus to them on startup:
 # to get the class name run xprop WM_CLASS and click on the window
@@ -321,6 +336,11 @@ assign [class="discord"] $ws4
 assign [class="Spotify"] $ws4
 assign [class="steam"] $ws5
 
+# Parsec remote desktop -> dedicated fullscreen workspace
+# Use for_window (not assign) because parsecd is Electron-based and sets
+# WM_CLASS after the window maps, which makes `assign` miss the match.
+for_window [class="(?i)parsec"] move to workspace $wsp, fullscreen enable, focus
+
 # automatic set focus new window if it opens on another workspace than the current:
 for_window [class="Ghostty"] focus
 for_window [class="ghostty"] focus
@@ -338,6 +358,7 @@ for_window [class="thunderbird"] focus
 #############################################
 
 #get auth work with polkit-gnome
+exec --no-startup-id gnome-keyring-daemon --start --components=secrets,pkcs11,secrets,ssh
 exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 
 # dex execute .desktop files + apps using /etc/xdg/autostart.
@@ -388,6 +409,11 @@ exec_always --no-startup-id ~/.config/i3/scripts/autotiling.py --limit 2
 ###############
 # if you do not use dex: exec --no-startup-id dex --autostart --environment i3
 # you need to have tray apps started manually one by one:
+
+# Proton VPN - starts minimised to the tray. The script waits for snixembed to
+# claim org.kde.StatusNotifierWatcher first; the app only probes for it once and
+# silently drops its tray icon if it is not there yet.
+exec --no-startup-id ~/.config/i3/scripts/start-protonvpn.sh
 
 # start blueberry app for managing bluetooth devices from tray:
 #exec --no-startup-id blueberry-tray
@@ -476,3 +502,6 @@ bindsym $mod+d exec --no-startup-id vicinae toggle #rofi -show combi -combi-modi
 #exec --no-startup-id greenclip daemon>/dev/null
 #bindsym $mod+c exec --no-startup-id rofi -modi "clipboard:greenclip print" -show clipboard \
 #		-config ~/.config/rofi/rofidmenu.rasi
+
+for_window [class="gamescope"] fullscreen enable
+for_window [class="steam_app_.*"] fullscreen enable

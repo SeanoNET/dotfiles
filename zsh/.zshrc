@@ -305,3 +305,21 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 
 # Added by tally installer
 export PATH="$HOME/.tally/bin:$PATH"
+
+# Added by get-aspire-cli.sh
+export PATH="$HOME/.aspire/bin:$PATH"
+
+herdr() {
+  if [ -n "$TMUX" ]; then
+    ghostty -e herdr "$@" &
+    disown
+  else
+    command herdr "$@"
+  fi
+}
+
+# ~/.ssh/config pins IdentityAgent to a fixed path, for clients that start
+# without SSH_AUTH_SOCK (Hermes Desktop). The agent's socket name rotates on
+# every restart, so keep that fixed path aimed at the live one — otherwise
+# github.com sees no agent and falls back to prompting for the key passphrase.
+[[ -S $SSH_AUTH_SOCK ]] && ln -sfn "$SSH_AUTH_SOCK" "$HOME/.ssh/agent/current"
