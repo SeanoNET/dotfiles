@@ -1,0 +1,157 @@
+#!/usr/bin/env bash
+
+set -e
+
+# ─────────────────────────────────────────────
+# AppImage installer
+# ─────────────────────────────────────────────
+
+APP_DIR="$HOME/.local/bin/apps"
+DESKTOP_DIR="$HOME/.local/share/applications"
+
+if [[ $# -eq 0 ]]; then
+    echo "Usage: install-appimage <AppImage>"
+    exit 1
+fi
+
+SOURCE="$1"
+
+if [[ ! -f "$SOURCE" ]]; then
+    echo "Error: File not found: $SOURCE"
+    exit 1
+fi
+
+if [[ "${SOURCE##*.}" != "AppImage" && "${SOURCE##*.}" != "appimage" ]]; then
+    echo "Warning: File doesn't appear to be an AppImage."
+fi
+
+mkdir -p "$APP_DIR"
+mkdir -p "$DESKTOP_DIR"
+
+# Get filename
+FILENAME="$(basename "$SOURCE")"
+
+# Remove .AppImage extension
+APP_NAME="${FILENAME%.*}"
+
+# Clean up common filename formatting
+APP_NAME="$(echo "$APP_NAME" | sed -E 's/[-_]+/ /g')"
+
+# Destination
+DEST="$APP_DIR/$(basename "$SOURCE")"
+
+echo "Installing: $APP_NAME"
+
+# Move AppImage
+if [[ "$(realpath "$SOURCE")" != "$(realpath "$DEST" 2>/dev/null || echo "")" ]]; then
+    mv "$SOURCE" "$DEST"
+fi
+
+chmod +x "$DEST"
+
+# ─────────────────────────────────────────────
+# Extract AppImage contents for icon/metadata
+# ─────────────────────────────────────────────
+
+TEMP_DIR="$(mktemp -d)"
+
+cleanup() {
+    rm -rf "$TEMP_DIR"
+}
+trap cleanup EXIT
+
+cd "$TEMP_DIR"
+
+echo "Extracting application metadata..."
+
+if "$DEST" --appimage-extract >/dev/null 2>&1; then
+
+    SQUASHFS="$TEMP_DIR/squashfs-root"
+
+    # Find desktop file
+    DESKTOP_FILE="$(find "$SQUASHFS" -type f -name '*.desktop' | head -n 1 || true)"
+
+    if [[ -n "$DESKTOP_FILE" ]]; then
+
+        # Get proper application name
+        REAL_NAME="$(grep '^Name=' "$DESKTOP_FILE" | head -n1 | cut -d= -f2- || true)"
+
+        if [[ -n "$REAL_NAME" ]]; then
+            APP_NAME="$REAL_NAME"
+        fi
+
+        # Get icon name from desktop file
+        ICON_NAME="$(grep '^Icon=' "$DESKTOP_FILE" | head -n1 | cut -d= -f2- || true)"
+
+        # Look for matching icon
+        if [[ -n "$ICON_NAME" ]]; then
+
+            ICON_SOURCE=""
+
+            for EXT in png svg xpm; do
+                FOUND="$(find "$SQUASHFS" -type f \
+                    \( -name "$ICON_NAME.$EXT" -o -name "$ICON_NAME" \) \
+                    | head -n 1 || true)"
+
+                if [[ -n "$FOUND" ]]; then
+                    ICON_SOURCE="$FOUND"
+                    break
+                fi
+            done
+
+            if [[ -n "$ICON_SOURCE" ]]; then
+                ICON_EXT="${ICON_SOURCE##*.}"
+                ICON_DEST="$APP_DIR/${APP_NAME// /_}.$ICON_EXT"
+
+                cp "$ICON_SOURCE" "$ICON_DEST"
+
+                ICON="$ICON_DEST"
+
+                echo "Icon found: $ICON"
+            fi
+        fi
+    fi
+fi
+
+# ─────────────────────────────────────────────
+# Create desktop launcher
+# ─────────────────────────────────────────────
+
+DESKTOP_ID="$(echo "$APP_NAME" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g')"
+
+DESKTOP_FILE="$DESKTOP_DIR/$DESKTOP_ID.desktop"
+
+echo "Creating launcher..."
+
+{
+    echo "[Desktop Entry]"
+    echo "Name=$APP_NAME"
+    echo "Comment=$APP_NAME"
+    echo "Exec=$DEST"
+    
+    if [[ -n "${ICON:-}" ]]; then
+        echo "Icon=$ICON"
+    fi
+
+    echo "Terminal=false"
+    echo "Type=Application"
+    echo "Categories=Utility;"
+} > "$DESKTOP_FILE"
+
+chmod +x "$DESKTOP_FILE"
+
+# Refresh desktop database
+if command -v update-desktop-database >/dev/null 2>&1; then
+    update-desktop-database "$DESKTOP_DIR" >/dev/null 2>&1 || true
+fi
+
+echo
+echo "✓ Installed $APP_NAME"
+echo
+echo "AppImage:"
+echo "  $DEST"
+echo
+echo "Launcher:"
+echo "  $DESKTOP_FILE"
+echo
+echo "It should now appear in your application launcher."
