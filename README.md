@@ -42,7 +42,6 @@ cd ~/dotfiles
 | Git TUI | Lazygit |
 | Audio | PipeWire + WirePlumber + Wiremix (TUI) |
 | Bluetooth | Bluetuith (TUI) |
-| Music | spotify-player (TUI) |
 | Clipboard | Omarchy clipboard manager |
 | Lock Screen | Omarchy (hyprlock) |
 | Web Apps | `omarchy webapp install` |
@@ -75,15 +74,14 @@ omarchy menu keybindings --print
 | `Mod+Return` | Terminal + tmux, pinned to workspace 1 | Terminal |
 | `Mod+e` | Editor (Zed, workspace 1) | — (Omarchy's editor was `Mod+Shift+n`) |
 | `Mod+n` | File manager (workspace 3) | — |
-| `Mod+m` | Music TUI popup | — |
 | `Mod+d` | Apps menu | — |
-| `Mod+t` | Focus tablet (scrcpy) | Toggle floating (→ `Mod+Shift+Space`) |
 | `Mod+r` | Resize mode (`hjkl`/arrows, `Esc`/`Return` to exit) | — |
 | `Mod+v` | Clipboard manager | Universal paste (dropped) |
 | `Mod+\` | Toggle window split | was `Mod+j` |
 | `Mod+Tab` | Former workspace | Next workspace (→ `Mod+Ctrl+Tab`) |
 | `Mod+Ctrl+Tab` | Next workspace | Former workspace (→ `Mod+Tab`) |
-| `Mod+F1` | Keybindings cheatsheet | was `Mod+k` |
+| `Mod+F1` | Omarchy keybindings menu | was `Mod+k` |
+| `Mod+F2` | Personal cheatsheet (modal TUI) | — |
 | `Mod+Shift+Space` | Toggle floating/tiling | Toggle top bar (→ `Mod+Shift+Alt+Space`) |
 | `Mod+Shift+n` | Open next empty workspace | Editor (→ `Mod+e`) |
 | `Mod+Shift+s` | Screenshot region to clipboard | Google Maps (dropped) |
@@ -98,7 +96,9 @@ These already matched the sway map, or were close enough to keep:
 | Key | Action |
 |-----|--------|
 | `Mod+f` | Fullscreen |
-| `Mod+s` | Toggle scratchpad |
+| `Mod+s` | Toggle scratchpad (sway used `Mod+Space`) |
+| `Mod+Alt+s` | Move window to scratchpad |
+| `Mod+t` | Toggle floating/tiling (same as `Mod+Shift+Space`) |
 | `Mod+g` | Toggle window grouping (sway's tabbed layout) |
 | `Mod+Space` | Omarchy menu |
 | `Mod+1-0` | Switch to workspace 1-10 |
@@ -111,24 +111,36 @@ These already matched the sway map, or were close enough to keep:
 
 ### Not carried over
 
-`Mod+a` (focus parent) and `Mod+s` (stacking layout) have no Hyprland
-equivalent. Grouping (`Mod+g`) covers the tabbed case.
+sway's `Mod+a` (focus parent) and stacking layout have no Hyprland
+equivalent. Grouping (`Mod+g`) covers the tabbed case. sway's `Mod+Space`
+scratchpad is on Omarchy's `Mod+s` instead.
 
 ---
 
-## Popup TUIs
+## Modal TUIs
 
-`popup-tui` opens a TUI in a centered floating Ghostty window, or focuses the
-existing one if it's already open:
+Omarchy tags a window `floating-window` to give it the standard modal
+treatment — float, centre, 875x600 — from `default/hypr/apps/system.lua`.
+Anything here opts into that rather than declaring its own float rules:
 
 ```bash
-popup-tui wiremix                    # default size (900x600)
-popup-tui --size 1400x800 spotify_player
+omarchy-launch-or-focus-tui --app-id=cheatsheet glow -p ~/dotfiles/CHEATSHEET.md
 ```
 
-It launches Ghostty with a `com.popup.<name>` class, which the window rules in
-[`hypr/.config/hypr/windows.lua`](hypr/.config/hypr/windows.lua) match to float,
-centre and size the window. Bound to `Mod+m` for the music TUI.
+`omarchy-launch-or-focus-tui` focuses the window if it's already open, launches
+it through `uwsm-app` + `xdg-terminal-exec` otherwise, and names it with the
+given app-id. Tag that app-id in
+[`hypr/.config/hypr/windows.lua`](hypr/.config/hypr/windows.lua) and override
+only what differs:
+
+```lua
+o.window("^cheatsheet$", { tag = "+floating-window" })
+o.window("^cheatsheet$", { size = { 1400, 900 } })
+```
+
+The cheatsheet is bound to `Mod+F2` and also appears in the Omarchy menu under
+**Learn → Cheatsheet**, added by
+[`omarchy/.config/omarchy/extensions/omarchy-menu.jsonc`](omarchy/.config/omarchy/extensions/omarchy-menu.jsonc).
 
 Omarchy's own bar panels cover the rest of what the waybar modules did:
 `Mod+Ctrl+a` audio, `Mod+Ctrl+b` bluetooth, `Mod+Ctrl+w` network,
@@ -161,14 +173,14 @@ Each directory is a stow package that maps to `$HOME`:
 
 | Package | Description |
 |---------|-------------|
-| `background` | Desktop wallpapers (~/.config/backdrops/) |
+| `bin` | Standalone utility scripts (`hermes-tunnel`, `install-appimage`, `shrink-video`) |
 | `chromium` | Chromium Wayland flags (for web apps) |
 | `ghostty` | Terminal config (opacity, font, shell) |
 | `git` | Git config + delta pager |
 | `hypr` | Hyprland overrides on top of Omarchy's defaults |
 | `lazygit` | Git TUI config + keybindings |
 | `nvim` | Neovim (LazyVim) config |
-| `omarchy` | Helper scripts (`launch-or-open`, `popup-tui`, `empty-workspace`) |
+| `omarchy` | Helper scripts (`launch-or-open`, `empty-workspace`) + menu extension |
 | `starship` | Shell prompt config |
 | `tmux` | Multiplexer config + Tokyo Night theme |
 | `vscode` | VS Code settings |
@@ -207,7 +219,7 @@ Plugins: Dracula theme, tmux-resurrect, tmux-tilish, tmux-command-palette, tmux-
 
 ## Zsh
 
-Aliases: `vim` = helix, `sp` = spotify_player, `ls/ll/la` = eza.
+Aliases: `vim` = helix, `ls/ll/la` = eza.
 
 Plugins (via zinit): syntax-highlighting, autosuggestions, completions, fzf-tab.
 
@@ -244,6 +256,10 @@ Integrations: fzf, zoxide, nvm, starship prompt.
 ## [Wallpapers](background/.config/backdrops/)
 
 <div align="center"><em>Digital scans of artwork by Albert Bierstadt</em></div>
+
+These are kept in the repo for reference only — they are not stowed. Omarchy
+owns the wallpaper: set one with `omarchy theme` or drop files into
+`~/.config/omarchy/themes/<theme>/backgrounds/`.
 
 <table>
   <tr>

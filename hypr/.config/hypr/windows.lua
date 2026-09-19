@@ -6,9 +6,14 @@
 --
 -- Rule syntax: https://wiki.hypr.land/Configuring/Basics/Window-Rules/
 
--- Floating popup terminals opened by the popup-tui script. The script may
--- override the size with --size, but everything else comes from here.
-o.window("^com\\.popup\\..*$", { float = true, center = true, size = { 900, 600 } })
+-- Modal TUIs launched with omarchy-launch-or-focus-tui --app-id=<id>.
+--
+-- Omarchy's own convention: anything tagged floating-window picks up its
+-- float + center + 875x600 treatment from default/hypr/apps/system.lua. Tag
+-- into it rather than re-declaring float/center, then override just the size.
+-- Omarchy's rules load first, so these win.
+o.window("^cheatsheet$", { tag = "+floating-window" })
+o.window("^cheatsheet$", { size = { 1400, 900 } })
 
 -- Dictate (XWayland) sits as a small always-centered HUD.
 o.window("^dictate$", { float = true, center = true, size = { 240, 80 } })

@@ -71,7 +71,6 @@ alias ls='eza --icons --group-directories-first --color=always --tree'
 alias ll='eza -l --icons'
 alias la='eza -la --icons'
 alias l='eza -la --icons --git'
-alias sp='spotify_player'
 
 
 #alias zed="zeditor"

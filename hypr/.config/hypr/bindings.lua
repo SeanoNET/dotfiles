@@ -30,15 +30,11 @@ end
 hl.unbind("SUPER + W") -- was: Close window (moved to SUPER + Q)
 o.bind("SUPER + Q", "Close window", hl.dsp.window.close())
 
--- sway: $mod+Shift+space toggles floating.
+-- sway: $mod+Shift+space toggles floating. Omarchy's own float toggle on
+-- SUPER + T is left in place, so either key works.
 hl.unbind("SUPER + SHIFT + SPACE") -- was: Toggle top bar (moved to SUPER + SHIFT + ALT + SPACE)
 o.bind("SUPER + SHIFT + SPACE", "Toggle window floating/tiling", hl.dsp.window.float({ action = "toggle" }))
 o.bind_toggle("SUPER + SHIFT + ALT + SPACE", "Toggle top bar", "bar")
-
--- sway: $mod+t focuses the tablet (scrcpy). Omarchy floats on SUPER + T, which
--- is now on SUPER + SHIFT + SPACE above.
-hl.unbind("SUPER + T") -- was: Toggle window floating/tiling (moved to SUPER + SHIFT + SPACE)
-o.bind("SUPER + T", "Focus tablet (scrcpy)", "omarchy-launch-or-focus scrcpy scrcpy")
 
 -- sway: $mod+backslash splits horizontally. Hyprland only has togglesplit, and
 -- SUPER + J is needed for vim-style focus below.
@@ -99,6 +95,9 @@ o.bind("SUPER + R", "Resize mode", hl.dsp.submap("resize"))
 --
 -- sway: $mod+Tab is back-and-forth, $mod+Ctrl+Tab is next. Omarchy has those
 -- two swapped. SUPER + SHIFT + TAB (previous) already matches.
+--
+-- The scratchpad stays on Omarchy's keys rather than sway's $mod+space:
+-- SUPER + S toggles it, SUPER + ALT + S throws the focused window into it.
 --------------------------------------------------------------------------------
 
 hl.unbind("SUPER + TAB") -- was: Next workspace (moved to SUPER + CTRL + TAB)
@@ -131,9 +130,6 @@ o.bind("SUPER + W", "Browser", launch_or_open("^zen", "2", "zen-browser"))
 -- sway: $mod+n opens the file manager on workspace 3.
 o.bind("SUPER + N", "File manager", launch_or_open("org.gnome.Nautilus", "3", "nautilus"))
 
--- sway: $mod+m opens the music TUI in a floating popup.
-o.bind("SUPER + M", "Music TUI", "popup-tui --size 1400x800 spotify_player")
-
 -- sway: $mod+d opens the launcher. Omarchy's apps menu is the equivalent, and
 -- stays on SUPER + ALT + SPACE as well.
 o.bind("SUPER + D", "Apps menu", "omarchy-menu toggle apps")
@@ -141,6 +137,13 @@ o.bind("SUPER + D", "Apps menu", "omarchy-menu toggle apps")
 --------------------------------------------------------------------------------
 -- Utilities
 --------------------------------------------------------------------------------
+
+-- sway: $mod+F1 showed the cheatsheet; Omarchy's keybindings menu has that key
+-- now, so the cheatsheet sits next to it on SUPER + F2. Launched as a modal
+-- TUI: omarchy-launch-or-focus-tui reuses the window if it's already open, and
+-- the app-id picks up the floating-window rules in hypr/windows.lua.
+o.bind("SUPER + F2", "Cheatsheet", "omarchy-launch-or-focus-tui --app-id=cheatsheet glow -p " ..
+  o.shell_quote(os.getenv("HOME") .. "/dotfiles/CHEATSHEET.md"))
 
 -- sway: $mod+v opens the clipboard history, which Omarchy has on SUPER + CTRL + V.
 -- Omarchy's universal paste is dropped rather than moved: it was never part of

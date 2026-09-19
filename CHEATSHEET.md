@@ -1,4 +1,45 @@
-# My Terminal Cheat Sheet
+# My Desktop & Terminal Cheat Sheet
+
+## Omarchy / Hyprland
+
+`Mod` = Super. `Mod+F1` prints the full live map (Omarchy defaults + overrides).
+`Mod+F2` reopens this cheatsheet; it's also in the Omarchy menu under Learn.
+
+### Windows
+- `Mod+q` - Close window
+- `Mod+h/j/k/l` - Focus left/down/up/right (arrows also work)
+- `Mod+Shift+h/j/k/l` - Swap window left/down/up/right
+- `Mod+f` - Fullscreen
+- `Mod+t` / `Mod+Shift+Space` - Toggle floating/tiling
+- `Mod+\` - Toggle window split
+- `Mod+g` - Toggle window grouping (tabbed)
+- `Mod+r` - Resize mode (`hjkl`/arrows, `Esc` or `Return` to exit)
+
+### Workspaces
+- `Mod+1-0` - Switch to workspace 1-10
+- `Mod+Shift+1-0` - Move window to workspace 1-10
+- `Mod+Tab` - Former workspace
+- `Mod+Ctrl+Tab` / `Mod+Shift+Tab` - Next / previous workspace
+- `Mod+Shift+n` - Open next empty workspace
+- `Mod+s` - Toggle scratchpad
+- `Mod+Alt+s` - Move window to scratchpad
+- `Mod+Alt+l` - Toggle workspace layout
+
+### Apps
+- `Mod+Return` - Terminal + tmux (workspace 1)
+- `Mod+e` - Editor / Zed (workspace 1)
+- `Mod+w` - Browser / Zen (workspace 2)
+- `Mod+n` - File manager (workspace 3)
+- `Mod+d` / `Mod+Space` - Apps menu / Omarchy menu
+
+### System
+- `Mod+v` - Clipboard history
+- `Print` - Screenshot
+- `Mod+Shift+s` - Screenshot region to clipboard
+- `Mod+Shift+x` - Lock screen
+- `Mod+Shift+p` - Power menu
+- `Mod+Shift+r` - Reload Hyprland config
+- `Mod+Shift+Alt+Space` - Toggle top bar
 
 ## Custom Commands
 
@@ -89,9 +130,9 @@
 - `l` - Long list with git status
 
 ### Utilities
-- `vim` / `vi` - Opens Neovim (LazyVim)
+- `vim` - Opens Helix
+- `nvim` - Opens Neovim (LazyVim)
 - `c` - Clear screen
-- `sp` - Spotify player
 
 ## Tmux Plugins
 
@@ -139,6 +180,9 @@
 - Example: `vim **<TAB>` then type part of filename
 
 ### Dotfiles Location
-- Zsh config: `~/.zshrc` (source: `~/dotfiles/zsh/.zshrc`)
-- Tmux config: `~/.config/tmux/tmux.conf` (source: `~/dotfiles/tmux/.config/tmux/tmux.conf`)
-- Lazygit config: `~/.config/lazygit/config.yml`
+All configs are stowed from `~/dotfiles` — the paths below are symlinks into it.
+- Zsh: `~/.zshrc` (source: `~/dotfiles/zsh/.zshrc`)
+- Tmux: `~/.config/tmux/tmux.conf`
+- Lazygit: `~/.config/lazygit/config.yml`
+- Hyprland overrides: `~/.config/hypr/` (source: `~/dotfiles/hypr/.config/hypr/`)
+- Helper scripts: `~/.local/bin/` (sources: `~/dotfiles/omarchy/`, `~/dotfiles/bin/`)

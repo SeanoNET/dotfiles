@@ -166,9 +166,7 @@ OFFICIAL_PACKAGES=(
 
     # Apps
     "ghostty"
-    "spotify-player"
     "azure-cli"
-    "scrcpy"
     "thunderbird"
 
     # Flatpak (installed here so the flatpak section can use it)
@@ -297,7 +295,7 @@ echo ""
 BACKUP_DIR="$HOME/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)"
 
 STOW_PACKAGES=(
-    background
+    bin
     chromium
     ghostty
     git
@@ -467,6 +465,14 @@ CRED
     echo -e "${GREEN}✓${NC} SMB automount configured (mounts on first access)"
 fi
 
+# Default terminal — xdg-terminal-exec (used by SUPER+RETURN and the modal
+# TUIs) resolves to foot on a stock Omarchy install until this is set.
+if command -v omarchy &>/dev/null; then
+    echo -e "${YELLOW}→${NC} Setting ghostty as the default terminal..."
+    omarchy default terminal ghostty || true
+    echo -e "${GREEN}✓${NC} Default terminal set to ghostty"
+fi
+
 # Change shell to zsh
 if [[ "$SHELL" == *"zsh"* ]]; then
     echo -e "${GREEN}✓${NC} Default shell is already zsh"
@@ -551,21 +557,24 @@ echo ""
 
 validation_ok=true
 
-for svc in NetworkManager docker.socket power-profiles-daemon; do
-    if systemctl is-enabled "$svc" &>/dev/null; then
-        echo -e "${GREEN}✓${NC} $svc enabled"
-    else
-        echo -e "${RED}✗${NC} $svc not enabled"
-        validation_ok=false
-    fi
-done
-
+# Omarchy itself is the precondition for everything else, so check it first.
 if command -v omarchy &>/dev/null; then
     echo -e "${GREEN}✓${NC} omarchy $(omarchy version 2>/dev/null)"
 else
     echo -e "${RED}✗${NC} omarchy not found — this branch expects a stock Omarchy install"
     validation_ok=false
 fi
+
+# These are enabled by Omarchy's installer (install/config/enable-services.sh),
+# not by this script. A failure here means the Omarchy install is incomplete.
+for svc in NetworkManager docker.socket power-profiles-daemon.service; do
+    if systemctl is-enabled "$svc" &>/dev/null; then
+        echo -e "${GREEN}✓${NC} $svc enabled"
+    else
+        echo -e "${RED}✗${NC} $svc not enabled — expected from Omarchy; enable with: sudo systemctl enable --now $svc"
+        validation_ok=false
+    fi
+done
 
 for svc in pipewire pipewire-pulse wireplumber; do
     if systemctl --user is-enabled "$svc" &>/dev/null 2>&1; then
@@ -575,7 +584,9 @@ for svc in pipewire pipewire-pulse wireplumber; do
     fi
 done
 
-for cmd in hyprctl ghostty tmux zsh stow jq launch-or-open popup-tui; do
+# Commands the keybindings in hypr/.config/hypr/bindings.lua shell out to.
+# A miss here means a dead key, not just a missing package.
+for cmd in hyprctl ghostty tmux zsh stow jq glow launch-or-open empty-workspace zeditor zen-browser nautilus; do
     if command -v "$cmd" &>/dev/null; then
         echo -e "${GREEN}✓${NC} $cmd available"
     else
@@ -583,6 +594,35 @@ for cmd in hyprctl ghostty tmux zsh stow jq launch-or-open popup-tui; do
         validation_ok=false
     fi
 done
+
+# Stow silently no-ops on conflicts, so confirm the symlinks actually landed
+# and point back into this repo rather than being leftover real files.
+for target in .config/hypr/bindings.lua .config/ghostty/config .config/tmux/tmux.conf .zshrc; do
+    dest="$HOME/$target"
+    if [[ -L "$dest" && "$(readlink -f "$dest")" == "$DOTFILES_DIR"/* ]]; then
+        echo -e "${GREEN}✓${NC} $target → dotfiles"
+    elif [[ -e "$dest" ]]; then
+        echo -e "${RED}✗${NC} $target exists but is not a dotfiles symlink — stow conflict"
+        validation_ok=false
+    else
+        echo -e "${RED}✗${NC} $target missing — stow did not run"
+        validation_ok=false
+    fi
+done
+
+# Hyprland's Lua config is only validated once the compositor parses it.
+if command -v hyprctl &>/dev/null && hyprctl version &>/dev/null; then
+    hypr_errors="$(hyprctl configerrors 2>/dev/null)"
+    if [[ -z "$hypr_errors" || "$hypr_errors" == *"no errors"* ]]; then
+        echo -e "${GREEN}✓${NC} Hyprland config parses cleanly"
+    else
+        echo -e "${RED}✗${NC} Hyprland config errors:"
+        echo "$hypr_errors" | sed 's/^/    /'
+        validation_ok=false
+    fi
+else
+    echo -e "${YELLOW}⚠${NC} Hyprland not running — check with 'hyprctl configerrors' after logging in"
+fi
 
 if [[ "$SHELL" == *"zsh"* ]]; then
     echo -e "${GREEN}✓${NC} Default shell is zsh"

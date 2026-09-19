@@ -1,0 +1,20 @@
+{
+  // Extends the Quickshell Omarchy menu. IDs are object keys and the parent is
+  // inferred from the dotted id, so "learn.cheatsheet" slots into Omarchy's
+  // existing Learn submenu alongside its Keybindings and Tmux entries.
+  //
+  // Reuse an existing id to override it; see the full field list and examples
+  // in /usr/share/omarchy/default/omarchy/omarchy-menu.jsonc.
+  //
+  // Hot-reloads on save. Force one with: omarchy menu refresh
+
+  // Personal cheatsheet, same modal TUI that SUPER + F2 opens. The app-id is
+  // matched by the floating-window rules in hypr/.config/hypr/windows.lua.
+  "learn.cheatsheet": {
+    "icon": "󰘳",
+    "label": "Cheatsheet",
+    "description": "Personal tmux, zsh and Hyprland keybindings",
+    "when": "test -f $HOME/dotfiles/CHEATSHEET.md",
+    "action": "omarchy-launch-or-focus-tui --app-id=cheatsheet glow -p $HOME/dotfiles/CHEATSHEET.md",
+  },
+}
