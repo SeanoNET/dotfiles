@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Hermes backend tunnel.
 #
-# Forwards the Hermes gateway API and dashboard from 10.0.0.118 to localhost,
-# so hermes-workspace's default URLs work with no config changes:
+# Forwards the Hermes gateway API and dashboard to localhost, so
+# hermes-workspace's default URLs work with no config changes:
 #
 #   HERMES_API_URL        -> http://127.0.0.1:8642   (chat completions, models)
 #   HERMES_DASHBOARD_URL  -> http://127.0.0.1:9119   (sessions, skills, config, cron)
@@ -12,12 +12,28 @@
 # shell-capable API on the LAN in cleartext. SSH gives us encryption and
 # auth for free.
 #
+# The host is not stored in this repo. Set HERMES_HOST in the environment, or
+# keep it in an untracked ~/.config/hermes/env:
+#
+#   # ~/.config/hermes/env
+#   HERMES_HOST=hermes@your-host
+#
 # Usage:  hermes-tunnel            (Ctrl-C to stop)
-#         HERMES_HOST=hermes@1.2.3.4 hermes-tunnel
+#         HERMES_HOST=hermes@host hermes-tunnel
 
 set -euo pipefail
 
-REMOTE="${HERMES_HOST:-hermes@10.0.0.118}"
+HERMES_ENV="${XDG_CONFIG_HOME:-$HOME/.config}/hermes/env"
+# shellcheck source=/dev/null
+[[ -z ${HERMES_HOST:-} && -r $HERMES_ENV ]] && . "$HERMES_ENV"
+
+if [[ -z ${HERMES_HOST:-} ]]; then
+  echo "error: HERMES_HOST is not set" >&2
+  echo "       export HERMES_HOST=hermes@your-host, or put it in $HERMES_ENV" >&2
+  exit 1
+fi
+
+REMOTE="$HERMES_HOST"
 
 trap 'printf "\ntunnel closed.\n"; exit 0' INT TERM
 

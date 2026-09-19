@@ -21,15 +21,27 @@ Expert-level Home Assistant configuration management with efficient workflows, r
 
 ## Connection Details
 
+The instance address is not stored in this repo. Set `HASS_HOST` before using
+any command below — export it in your shell, or keep it in an untracked
+`~/.config/hass/env` and source that:
+
 ```bash
+# ~/.config/hass/env  (not tracked by git)
+export HASS_HOST=root@homeassistant.local
+```
+
+```bash
+# Fail fast rather than silently targeting the wrong host
+: "${HASS_HOST:?export HASS_HOST=root@<your-ha-host> first}"
+
 # SSH connection to Home Assistant
-ssh -i ~/.ssh/id_ed25519 root@10.0.0.218 -p 22
+ssh -i ~/.ssh/id_ed25519 "$HASS_HOST" -p 22
 
 # SCP file transfer
-scp -i ~/.ssh/id_ed25519 -P 22 <local_file> root@10.0.0.218:/config/
+scp -i ~/.ssh/id_ed25519 -P 22 <local_file> "$HASS_HOST":/config/
 
 # SSH command shorthand used throughout this skill
-SSH_CMD="ssh -i ~/.ssh/id_ed25519 -p 22 root@10.0.0.218"
+SSH_CMD="ssh -i ~/.ssh/id_ed25519 -p 22 $HASS_HOST"
 ```
 
 ## Critical Rules
@@ -40,10 +52,10 @@ SSH_CMD="ssh -i ~/.ssh/id_ed25519 -p 22 root@10.0.0.218"
 
 ```bash
 # For config files (yaml)
-scp -i ~/.ssh/id_ed25519 -P 22 root@10.0.0.218:/config/<file> ./<file>
+scp -i ~/.ssh/id_ed25519 -P 22 "$HASS_HOST":/config/<file> ./<file>
 
 # For dashboard files (.storage/)
-scp -i ~/.ssh/id_ed25519 -P 22 root@10.0.0.218:/config/.storage/<dashboard_file> .storage/<dashboard_file>
+scp -i ~/.ssh/id_ed25519 -P 22 "$HASS_HOST":/config/.storage/<dashboard_file> .storage/<dashboard_file>
 
 # For any file - ALWAYS do this BEFORE making changes
 # Pattern: FETCH -> READ -> MODIFY -> DEPLOY -> VERIFY
@@ -57,7 +69,7 @@ scp -i ~/.ssh/id_ed25519 -P 22 root@10.0.0.218:/config/.storage/<dashboard_file>
 
 ```bash
 # Check if an entity exists
-ssh -i ~/.ssh/id_ed25519 -p 22 root@10.0.0.218 "ha core logs" # for general health
+ssh -i ~/.ssh/id_ed25519 -p 22 "$HASS_HOST" "ha core logs" # for general health
 hass-cli state get sensor.example_entity
 hass-cli state list | grep -i "search_term"
 
@@ -97,7 +109,7 @@ hass-cli state list | grep "^light\."
 ## Prerequisites
 
 Before starting, verify the environment has:
-1. SSH access to Home Assistant instance (`root@10.0.0.218` via key `~/.ssh/id_ed25519`)
+1. SSH access to the Home Assistant instance (`$HASS_HOST`, via key `~/.ssh/id_ed25519`)
 2. `hass-cli` installed locally
 3. Environment variables loaded (HASS_SERVER, HASS_TOKEN)
 4. Git repository connected to HA `/config` directory
@@ -125,16 +137,16 @@ hass-cli service call automation.trigger --arguments entity_id=automation.name
 
 ```bash
 # Check configuration validity
-ssh -i ~/.ssh/id_ed25519 -p 22 root@10.0.0.218 "ha core check"
+ssh -i ~/.ssh/id_ed25519 -p 22 "$HASS_HOST" "ha core check"
 
 # Restart Home Assistant
-ssh -i ~/.ssh/id_ed25519 -p 22 root@10.0.0.218 "ha core restart"
+ssh -i ~/.ssh/id_ed25519 -p 22 "$HASS_HOST" "ha core restart"
 
 # View logs
-ssh -i ~/.ssh/id_ed25519 -p 22 root@10.0.0.218 "ha core logs"
+ssh -i ~/.ssh/id_ed25519 -p 22 "$HASS_HOST" "ha core logs"
 
 # Tail logs with grep
-ssh -i ~/.ssh/id_ed25519 -p 22 root@10.0.0.218 "ha core logs | grep -i error | tail -20"
+ssh -i ~/.ssh/id_ed25519 -p 22 "$HASS_HOST" "ha core logs | grep -i error | tail -20"
 ```
 
 ## Deployment Workflows
@@ -146,7 +158,7 @@ Use for changes you want in version control:
 ```bash
 # 1. Make changes locally
 # 2. Check validity
-ssh -i ~/.ssh/id_ed25519 -p 22 root@10.0.0.218 "ha core check"
+ssh -i ~/.ssh/id_ed25519 -p 22 "$HASS_HOST" "ha core check"
 
 # 3. Commit and push
 git add file.yaml
@@ -154,16 +166,16 @@ git commit -m "Description"
 git push
 
 # 4. CRITICAL: Pull to HA instance
-ssh -i ~/.ssh/id_ed25519 -p 22 root@10.0.0.218 "cd /config && git pull"
+ssh -i ~/.ssh/id_ed25519 -p 22 "$HASS_HOST" "cd /config && git pull"
 
 # 5. Reload or restart
 hass-cli service call automation.reload  # if reload sufficient
 # OR
-ssh -i ~/.ssh/id_ed25519 -p 22 root@10.0.0.218 "ha core restart"  # if restart needed
+ssh -i ~/.ssh/id_ed25519 -p 22 "$HASS_HOST" "ha core restart"  # if restart needed
 
 # 6. Verify
 hass-cli state get sensor.new_entity
-ssh -i ~/.ssh/id_ed25519 -p 22 root@10.0.0.218 "ha core logs | grep -i error | tail -20"
+ssh -i ~/.ssh/id_ed25519 -p 22 "$HASS_HOST" "ha core logs | grep -i error | tail -20"
 ```
 
 ### Rapid Development Workflow (Testing/Iteration)
@@ -173,7 +185,7 @@ Use `scp` for quick testing before committing:
 ```bash
 # 1. Make changes locally
 # 2. Quick deploy
-scp -i ~/.ssh/id_ed25519 -P 22 automations.yaml root@10.0.0.218:/config/
+scp -i ~/.ssh/id_ed25519 -P 22 automations.yaml "$HASS_HOST":/config/
 
 # 3. Reload/restart
 hass-cli service call automation.reload
@@ -225,12 +237,12 @@ IMPORTANT: If you update a dashboard, use browser mod to refresh the browsers so
 ### Step 1: Deploy
 ```bash
 git add automations.yaml && git commit -m "..." && git push
-ssh -i ~/.ssh/id_ed25519 -p 22 root@10.0.0.218 "cd /config && git pull"
+ssh -i ~/.ssh/id_ed25519 -p 22 "$HASS_HOST" "cd /config && git pull"
 ```
 
 ### Step 2: Check Configuration
 ```bash
-ssh -i ~/.ssh/id_ed25519 -p 22 root@10.0.0.218 "ha core check"
+ssh -i ~/.ssh/id_ed25519 -p 22 "$HASS_HOST" "ha core check"
 ```
 
 ### Step 3: Reload
@@ -251,7 +263,7 @@ hass-cli service call automation.trigger --arguments entity_id=automation.name
 ### Step 5: Check Logs
 ```bash
 sleep 3
-ssh -i ~/.ssh/id_ed25519 -p 22 root@10.0.0.218 "ha core logs | grep -i 'automation_name' | tail -20"
+ssh -i ~/.ssh/id_ed25519 -p 22 "$HASS_HOST" "ha core logs | grep -i 'automation_name' | tail -20"
 ```
 
 **Success indicators:**
@@ -307,13 +319,13 @@ These are YAML-based view files (not JSON `.storage/` files). Always fetch these
 
 ```bash
 # List available minimalist dashboard views
-ssh -i ~/.ssh/id_ed25519 -p 22 root@10.0.0.218 "ls /config/ui_lovelace_minimalist/dashboard/views/"
+ssh -i ~/.ssh/id_ed25519 -p 22 "$HASS_HOST" "ls /config/ui_lovelace_minimalist/dashboard/views/"
 
 # Fetch a specific view before editing
-scp -i ~/.ssh/id_ed25519 -P 22 root@10.0.0.218:/config/ui_lovelace_minimalist/dashboard/views/<view_file>.yaml ./<view_file>.yaml
+scp -i ~/.ssh/id_ed25519 -P 22 "$HASS_HOST":/config/ui_lovelace_minimalist/dashboard/views/<view_file>.yaml ./<view_file>.yaml
 
 # Deploy after editing
-scp -i ~/.ssh/id_ed25519 -P 22 ./<view_file>.yaml root@10.0.0.218:/config/ui_lovelace_minimalist/dashboard/views/<view_file>.yaml
+scp -i ~/.ssh/id_ed25519 -P 22 ./<view_file>.yaml "$HASS_HOST":/config/ui_lovelace_minimalist/dashboard/views/<view_file>.yaml
 ```
 
 **What are Lovelace Dashboards?**
@@ -337,7 +349,7 @@ scp -i ~/.ssh/id_ed25519 -P 22 ./<view_file>.yaml root@10.0.0.218:/config/ui_lov
 vim .storage/lovelace.control_center
 
 # 2. Deploy immediately (no git commit yet)
-scp -i ~/.ssh/id_ed25519 -P 22 .storage/lovelace.control_center root@10.0.0.218:/config/.storage/
+scp -i ~/.ssh/id_ed25519 -P 22 .storage/lovelace.control_center "$HASS_HOST":/config/.storage/
 
 # 3. Refresh browser (Ctrl+F5 or Cmd+Shift+R)
 # No HA restart needed!
@@ -348,7 +360,7 @@ scp -i ~/.ssh/id_ed25519 -P 22 .storage/lovelace.control_center root@10.0.0.218:
 git add .storage/lovelace.control_center
 git commit -m "Update dashboard layout"
 git push
-ssh -i ~/.ssh/id_ed25519 -p 22 root@10.0.0.218 "cd /config && git pull"
+ssh -i ~/.ssh/id_ed25519 -p 22 "$HASS_HOST" "cd /config && git pull"
 ```
 
 **Why scp for dashboards:**
@@ -377,11 +389,11 @@ cp .storage/lovelace.my_home .storage/lovelace.new_dashboard
 }
 
 # Step 3: Deploy both files
-scp -i ~/.ssh/id_ed25519 -P 22 .storage/lovelace.new_dashboard root@10.0.0.218:/config/.storage/
-scp -i ~/.ssh/id_ed25519 -P 22 .storage/lovelace_dashboards root@10.0.0.218:/config/.storage/
+scp -i ~/.ssh/id_ed25519 -P 22 .storage/lovelace.new_dashboard "$HASS_HOST":/config/.storage/
+scp -i ~/.ssh/id_ed25519 -P 22 .storage/lovelace_dashboards "$HASS_HOST":/config/.storage/
 
 # Step 4: Restart HA (required for registry changes)
-ssh -i ~/.ssh/id_ed25519 -p 22 root@10.0.0.218 "ha core restart"
+ssh -i ~/.ssh/id_ed25519 -p 22 "$HASS_HOST" "ha core restart"
 sleep 30
 
 # Step 5: Verify appears in sidebar
@@ -656,12 +668,12 @@ hass-cli state get binary_sensor.front_door
 
 ```bash
 # Configuration
-ssh -i ~/.ssh/id_ed25519 -p 22 root@10.0.0.218 "ha core check"
-ssh -i ~/.ssh/id_ed25519 -p 22 root@10.0.0.218 "ha core restart"
+ssh -i ~/.ssh/id_ed25519 -p 22 "$HASS_HOST" "ha core check"
+ssh -i ~/.ssh/id_ed25519 -p 22 "$HASS_HOST" "ha core restart"
 
 # Logs
-ssh -i ~/.ssh/id_ed25519 -p 22 root@10.0.0.218 "ha core logs | tail -50"
-ssh -i ~/.ssh/id_ed25519 -p 22 root@10.0.0.218 "ha core logs | grep -i error | tail -20"
+ssh -i ~/.ssh/id_ed25519 -p 22 "$HASS_HOST" "ha core logs | tail -50"
+ssh -i ~/.ssh/id_ed25519 -p 22 "$HASS_HOST" "ha core logs | grep -i error | tail -20"
 
 # State/Services
 hass-cli state list
@@ -671,18 +683,18 @@ hass-cli service call automation.trigger --arguments entity_id=automation.name
 
 # Deployment
 git add . && git commit -m "..." && git push
-ssh -i ~/.ssh/id_ed25519 -p 22 root@10.0.0.218 "cd /config && git pull"
-scp -i ~/.ssh/id_ed25519 -P 22 file.yaml root@10.0.0.218:/config/
+ssh -i ~/.ssh/id_ed25519 -p 22 "$HASS_HOST" "cd /config && git pull"
+scp -i ~/.ssh/id_ed25519 -P 22 file.yaml "$HASS_HOST":/config/
 
 # Dashboard deployment
-scp -i ~/.ssh/id_ed25519 -P 22 .storage/lovelace.my_dashboard root@10.0.0.218:/config/.storage/
+scp -i ~/.ssh/id_ed25519 -P 22 .storage/lovelace.my_dashboard "$HASS_HOST":/config/.storage/
 python3 -m json.tool .storage/lovelace.my_dashboard > /dev/null  # Validate JSON
 
 # Quick test cycle
-scp -i ~/.ssh/id_ed25519 -P 22 automations.yaml root@10.0.0.218:/config/
+scp -i ~/.ssh/id_ed25519 -P 22 automations.yaml "$HASS_HOST":/config/
 hass-cli service call automation.reload
 hass-cli service call automation.trigger --arguments entity_id=automation.name
-ssh -i ~/.ssh/id_ed25519 -p 22 root@10.0.0.218 "ha core logs | grep -i 'automation' | tail -10"
+ssh -i ~/.ssh/id_ed25519 -p 22 "$HASS_HOST" "ha core logs | grep -i 'automation' | tail -10"
 ```
 
 ## Best Practices Summary
