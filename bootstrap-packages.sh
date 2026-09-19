@@ -142,9 +142,7 @@ OFFICIAL_PACKAGES=(
     # CLI Tools
     "glow"
     "git-delta"
-    "playerctl"
     "yazi"
-    "python"
 
     # Dev Tools
     "github-cli"
@@ -277,6 +275,15 @@ fi
 
 # claude code
 if command -v claude &>/dev/null; then
+    echo -e "${GREEN}✓${NC} claude code already installed"
+else
+    echo -e "${YELLOW}→${NC} Installing claude code..."
+    curl -fsSL https://claude.ai/install.sh | bash
+    echo -e "${GREEN}✓${NC} claude code installed"
+fi
+
+# codex
+if command -v codex &>/dev/null; then
     echo -e "${GREEN}✓${NC} claude code already installed"
 else
     echo -e "${YELLOW}→${NC} Installing claude code..."
