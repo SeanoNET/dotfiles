@@ -5,9 +5,8 @@ dofile((os.getenv("OMARCHY_PATH") or "/usr/share/omarchy") .. "/default/hypr/boo
 
 -- Load Omarchy defaults.
 --
--- Kept on: the bindings below only override the handful of keys that collide
--- with the sway map carried over from the `wayland` branch, so new Omarchy
--- defaults keep arriving with package updates.
+-- Kept on: hypr/bindings.lua only adds keys Omarchy leaves free, so new
+-- Omarchy defaults keep arriving with package updates.
 require("default.hypr.omarchy")
 
 -- Personal overrides. Loaded after Omarchy's defaults so package updates can

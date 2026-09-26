@@ -2,44 +2,17 @@
 
 ## Omarchy / Hyprland
 
-`Mod` = Super. `Mod+F1` prints the full live map (Omarchy defaults + overrides).
+`Mod` = Super. Omarchy's default bindings apply; `Mod+k` shows the full live
+map. These are the personal additions on top.
 `Mod+F2` reopens this cheatsheet; it's also in the Omarchy menu under Learn.
 
-### Windows
-- `Mod+q` - Close window
-- `Mod+h/j/k/l` - Focus left/down/up/right (arrows also work)
+- `Mod+q` - Close window (Omarchy's `Mod+w` also works)
 - `Mod+Shift+h/j/k/l` - Swap window left/down/up/right
-- `Mod+f` - Fullscreen
-- `Mod+t` / `Mod+Shift+Space` - Toggle floating/tiling
-- `Mod+\` - Toggle window split
-- `Mod+g` - Toggle window grouping (tabbed)
 - `Mod+r` - Resize mode (`hjkl`/arrows, `Esc` or `Return` to exit)
-
-### Workspaces
-- `Mod+1-0` - Switch to workspace 1-10
-- `Mod+Shift+1-0` - Move window to workspace 1-10
-- `Mod+Tab` - Former workspace
-- `Mod+Ctrl+Tab` / `Mod+Shift+Tab` - Next / previous workspace
-- `Mod+Shift+n` - Open next empty workspace
-- `Mod+s` - Toggle scratchpad
-- `Mod+Alt+s` - Move window to scratchpad
-- `Mod+Alt+l` - Toggle workspace layout
-
-### Apps
-- `Mod+Return` - Terminal + tmux (workspace 1)
 - `Mod+e` - Editor / Zed (workspace 1)
-- `Mod+w` - Browser / Zen (workspace 2)
 - `Mod+n` - File manager (workspace 3)
-- `Mod+d` / `Mod+Space` - Apps menu / Omarchy menu
-
-### System
-- `Mod+v` - Clipboard history
-- `Print` - Screenshot
-- `Mod+Shift+s` - Screenshot region to clipboard
-- `Mod+Shift+x` - Lock screen
-- `Mod+Shift+p` - Power menu
+- `Mod+d` - Apps menu
 - `Mod+Shift+r` - Reload Hyprland config
-- `Mod+Shift+Alt+Space` - Toggle top bar
 
 ## Custom Commands
 

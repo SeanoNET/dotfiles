@@ -142,30 +142,15 @@ OFFICIAL_PACKAGES=(
     # CLI Tools
     "glow"
     "git-delta"
-    "yazi"
-
-    # Dev Tools
-    "github-cli"
-    "kubectl"
-    "kubectx"
-
-    # Qt Theming
-    "qt5ct"
-    "qt6ct"
-
-    # Audio / Networking front-ends
-    "wiremix"
-    "nm-connection-editor"
 
     # Editors
     "code"
     "zed"
-    "neovim"
 
     # Apps
     "ghostty"
     "azure-cli"
-    "thunderbird"
+    "nextcloud-client"
 
     # Flatpak (installed here so the flatpak section can use it)
     "flatpak"
@@ -185,10 +170,8 @@ echo ""
 
 AUR_PACKAGES=(
     "1password-beta"
-    "bluetuith"
     "bambustudio-bin"
-    "localsend-bin"
-    "opencode-bin"
+    "stably-orca-bin"
     "zen-browser-bin"
 )
 
@@ -254,43 +237,6 @@ else
     echo -e "${GREEN}✓${NC} zinit installed"
 fi
 
-# nvm + Node.js LTS
-export NVM_DIR="$HOME/.nvm"
-if [[ -d "$NVM_DIR" ]]; then
-    echo -e "${GREEN}✓${NC} nvm already installed"
-else
-    echo -e "${YELLOW}→${NC} Installing nvm..."
-    PROFILE=/dev/null bash -c "$(curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh)"
-    echo -e "${GREEN}✓${NC} nvm installed"
-fi
-# Install Node.js LTS
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-if command -v node &>/dev/null; then
-    echo -e "${GREEN}✓${NC} Node.js already installed ($(node --version))"
-else
-    echo -e "${YELLOW}→${NC} Installing Node.js LTS..."
-    nvm install --lts
-    echo -e "${GREEN}✓${NC} Node.js LTS installed ($(node --version))"
-fi
-
-# claude code
-if command -v claude &>/dev/null; then
-    echo -e "${GREEN}✓${NC} claude code already installed"
-else
-    echo -e "${YELLOW}→${NC} Installing claude code..."
-    curl -fsSL https://claude.ai/install.sh | bash
-    echo -e "${GREEN}✓${NC} claude code installed"
-fi
-
-# codex
-if command -v codex &>/dev/null; then
-    echo -e "${GREEN}✓${NC} claude code already installed"
-else
-    echo -e "${YELLOW}→${NC} Installing claude code..."
-    curl -fsSL https://claude.ai/install.sh | bash
-    echo -e "${GREEN}✓${NC} claude code installed"
-fi
-
 # ── GNU Stow Symlinks ──────────────────────────────────────────────
 
 echo ""
@@ -308,12 +254,12 @@ STOW_PACKAGES=(
     git
     hypr
     lazygit
+    mise
     omarchy
     starship
     tmux
     nvim
     vscode
-    yazi
     zed
     zsh
 )
@@ -342,58 +288,6 @@ for pkg in "${STOW_PACKAGES[@]}"; do
         echo -e "${YELLOW}⚠${NC} $pkg directory not found, skipping"
     fi
 done
-
-# ── Theme Setup ─────────────────────────────────────────────────────
-
-echo ""
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BLUE}    Theme Setup (Tokyo Night Storm)${NC}"
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo ""
-
-# GTK dark theme
-echo -e "${YELLOW}→${NC} Configuring GTK dark theme..."
-gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark' 2>/dev/null || true
-gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark' 2>/dev/null || true
-echo -e "${GREEN}✓${NC} GTK dark theme configured"
-
-# Qt theme (qt5ct/qt6ct)
-for ver in qt5ct qt6ct; do
-    config_dir="$HOME/.config/$ver"
-    config_file="$config_dir/$ver.conf"
-    if [[ ! -f "$config_file" ]]; then
-        echo -e "${YELLOW}→${NC} Creating $ver config..."
-        mkdir -p "$config_dir"
-        cat > "$config_file" <<QTCONF
-[Appearance]
-style=Fusion
-color_scheme_path=
-custom_palette=false
-standard_dialogs=default
-
-[Fonts]
-fixed="JetBrains Mono,10,-1,5,50,0,0,0,0,0"
-general="JetBrains Mono,10,-1,5,50,0,0,0,0,0"
-QTCONF
-        echo -e "${GREEN}✓${NC} $ver config created"
-    else
-        echo -e "${GREEN}✓${NC} $ver config already exists"
-    fi
-done
-
-# VS Code Tokyo Night extension
-if command -v code &>/dev/null; then
-    echo -e "${YELLOW}→${NC} Installing VS Code Tokyo Night extension..."
-    code --install-extension enkia.tokyo-night || true
-    echo -e "${GREEN}✓${NC} VS Code Tokyo Night extension installed"
-fi
-
-# Yazi Tokyo Night flavor
-if command -v ya &>/dev/null; then
-    echo -e "${YELLOW}→${NC} Installing Yazi Tokyo Night flavor..."
-    ya pkg add BennyOe/tokyo-night || true
-    echo -e "${GREEN}✓${NC} Yazi Tokyo Night flavor installed"
-fi
 
 # ── Post-Installation Configuration ─────────────────────────────────
 
@@ -480,6 +374,19 @@ if command -v omarchy &>/dev/null; then
     echo -e "${GREEN}✓${NC} Default terminal set to ghostty"
 fi
 
+# Steam — installed the Omarchy way so it also pulls the lib32 Vulkan/NVIDIA
+# drivers matched to this machine's GPU. Guarded on the binary because the
+# installer launches Steam when it finishes, which is not wanted on a re-run.
+if command -v omarchy &>/dev/null && ! command -v steam &>/dev/null; then
+    echo -e "${YELLOW}→${NC} Installing Steam and lib32 graphics drivers..."
+    # gpu-lib32 exits non-zero when it detects no Intel/AMD/NVIDIA GPU, so do
+    # not let that abort the bootstrap.
+    omarchy install gaming steam || true
+    echo -e "${GREEN}✓${NC} Steam installed"
+else
+    command -v steam &>/dev/null && echo -e "${GREEN}✓${NC} Steam already installed"
+fi
+
 # Change shell to zsh
 if [[ "$SHELL" == *"zsh"* ]]; then
     echo -e "${GREEN}✓${NC} Default shell is already zsh"
@@ -487,6 +394,17 @@ else
     echo -e "${YELLOW}→${NC} Changing default shell to zsh..."
     sudo chsh -s "$(which zsh)" "$USER"
     echo -e "${GREEN}✓${NC} Default shell changed to zsh"
+fi
+
+# mise toolchain (must run after stow so config.toml is in place).
+# mise itself ships with Omarchy, so this only installs the tools it pins:
+# bun, claude, codex, gh, node and opencode.
+if command -v mise &>/dev/null; then
+    echo -e "${YELLOW}→${NC} Installing mise toolchain..."
+    mise install && echo -e "${GREEN}✓${NC} mise toolchain installed" \
+        || echo -e "${RED}✗${NC} mise install failed — run 'mise install' by hand"
+else
+    echo -e "${RED}✗${NC} mise not found — expected from Omarchy (mise-bin is in its base packages)"
 fi
 
 # tpm + tmux plugins (must run after stow so configs are in place)
@@ -572,28 +490,9 @@ else
     validation_ok=false
 fi
 
-# These are enabled by Omarchy's installer (install/config/enable-services.sh),
-# not by this script. A failure here means the Omarchy install is incomplete.
-for svc in NetworkManager docker.socket power-profiles-daemon.service; do
-    if systemctl is-enabled "$svc" &>/dev/null; then
-        echo -e "${GREEN}✓${NC} $svc enabled"
-    else
-        echo -e "${RED}✗${NC} $svc not enabled — expected from Omarchy; enable with: sudo systemctl enable --now $svc"
-        validation_ok=false
-    fi
-done
-
-for svc in pipewire pipewire-pulse wireplumber; do
-    if systemctl --user is-enabled "$svc" &>/dev/null 2>&1; then
-        echo -e "${GREEN}✓${NC} $svc (user) enabled"
-    else
-        echo -e "${YELLOW}⚠${NC} $svc (user) — will auto-start with desktop session"
-    fi
-done
-
 # Commands the keybindings in hypr/.config/hypr/bindings.lua shell out to.
 # A miss here means a dead key, not just a missing package.
-for cmd in hyprctl ghostty tmux zsh stow jq glow launch-or-open empty-workspace zeditor zen-browser nautilus; do
+for cmd in hyprctl ghostty tmux zsh stow jq glow launch-or-open zeditor nautilus; do
     if command -v "$cmd" &>/dev/null; then
         echo -e "${GREEN}✓${NC} $cmd available"
     else

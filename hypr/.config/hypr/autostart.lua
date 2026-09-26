@@ -10,3 +10,6 @@ o.launch_on_start("dictate_desktop")
 
 -- Discord (Flatpak); the focus-stealing rule lives in hypr/windows.lua.
 o.launch_on_start("flatpak run com.discordapp.Discord")
+
+-- Nextcloud sync client, straight to the tray.
+o.launch_on_start("nextcloud --background")

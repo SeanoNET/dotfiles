@@ -1,0 +1,15 @@
+# Toolchain managed by mise rather than pacman/AUR, so versions are pinned
+# here and reproduce on any machine from this repo.
+#
+# Apply with: mise install
+
+[tools]
+bun = "latest"
+claude = "latest"
+codex = "latest"
+gh = "latest"
+node = "26.8.1"
+opencode = "latest"
+
+[settings.upgrade]
+auto_prune = false

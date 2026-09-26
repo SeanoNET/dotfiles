@@ -37,7 +37,7 @@ cd ~/dotfiles
 | Prompt | Starship |
 | App Launcher | Omarchy menu (`Super+Space`) |
 | Browser | Zen Browser |
-| File Manager | Nautilus / Yazi (TUI) |
+| File Manager | Nautilus |
 | Editor | Neovim (LazyVim) / Zed / VS Code |
 | Git TUI | Lazygit |
 | Audio | PipeWire + WirePlumber + Wiremix (TUI) |
@@ -52,68 +52,28 @@ cd ~/dotfiles
 
 `Mod` = Super/Windows key.
 
-Omarchy's defaults stay in place except where they collided with the sway
-keymap this config came from. Every override lives in
-[`hypr/.config/hypr/bindings.lua`](hypr/.config/hypr/bindings.lua), each one
-annotated with what Omarchy had on that key and where it moved to.
+Omarchy's default bindings are kept unchanged. The only additions live in
+[`hypr/.config/hypr/bindings.lua`](hypr/.config/hypr/bindings.lua), all on
+keys Omarchy leaves free.
 
-Print the full live map (Omarchy defaults + these overrides) with:
+Print the full live map (Omarchy defaults + these additions) with:
 
 ```bash
 omarchy menu keybindings --print
 ```
 
-### Overridden from Omarchy defaults
-
-| Key | Action | Omarchy default (moved to) |
-|-----|--------|----------------------------|
-| `Mod+q` | Close window | was `Mod+w` |
-| `Mod+w` | Browser (zen, workspace 2) | Close window (→ `Mod+q`) |
-| `Mod+h/j/k/l` | Focus left/down/up/right | `j` split, `k` keybindings (→ `Mod+F1`), `l` layout (→ `Mod+Alt+l`) |
-| `Mod+Shift+h/j/k/l` | Swap window left/down/up/right | — |
-| `Mod+Return` | Terminal + tmux, pinned to workspace 1 | Terminal |
-| `Mod+e` | Editor (Zed, workspace 1) | — (Omarchy's editor was `Mod+Shift+n`) |
-| `Mod+n` | File manager (workspace 3) | — |
-| `Mod+d` | Apps menu | — |
-| `Mod+r` | Resize mode (`hjkl`/arrows, `Esc`/`Return` to exit) | — |
-| `Mod+v` | Clipboard manager | Universal paste (dropped) |
-| `Mod+\` | Toggle window split | was `Mod+j` |
-| `Mod+Tab` | Former workspace | Next workspace (→ `Mod+Ctrl+Tab`) |
-| `Mod+Ctrl+Tab` | Next workspace | Former workspace (→ `Mod+Tab`) |
-| `Mod+F1` | Omarchy keybindings menu | was `Mod+k` |
-| `Mod+F2` | Personal cheatsheet (modal TUI) | — |
-| `Mod+Shift+Space` | Toggle floating/tiling | Toggle top bar (→ `Mod+Shift+Alt+Space`) |
-| `Mod+Shift+n` | Open next empty workspace | Editor (→ `Mod+e`) |
-| `Mod+Shift+s` | Screenshot region to clipboard | Google Maps (dropped) |
-| `Mod+Shift+x` | Lock screen | X webapp (dropped) |
-| `Mod+Shift+p` | Power menu | Google Photos (dropped) |
-| `Mod+Shift+r` | Reload Hyprland config | — |
-
-### Kept from Omarchy
-
-These already matched the sway map, or were close enough to keep:
+### Added on top of Omarchy
 
 | Key | Action |
 |-----|--------|
-| `Mod+f` | Fullscreen |
-| `Mod+s` | Toggle scratchpad (sway used `Mod+Space`) |
-| `Mod+Alt+s` | Move window to scratchpad |
-| `Mod+t` | Toggle floating/tiling (same as `Mod+Shift+Space`) |
-| `Mod+g` | Toggle window grouping (sway's tabbed layout) |
-| `Mod+Space` | Omarchy menu |
-| `Mod+1-0` | Switch to workspace 1-10 |
-| `Mod+Shift+1-0` | Move window to workspace 1-10 |
-| `Mod+Shift+Tab` | Previous workspace |
-| `Mod+arrows` | Focus left/down/up/right |
-| `Mod+Shift+arrows` | Swap window |
-| `Print` | Screenshot |
-| `XF86Audio*` / `XF86MonBrightness*` | Volume, media and brightness |
-
-### Not carried over
-
-sway's `Mod+a` (focus parent) and stacking layout have no Hyprland
-equivalent. Grouping (`Mod+g`) covers the tabbed case. sway's `Mod+Space`
-scratchpad is on Omarchy's `Mod+s` instead.
+| `Mod+q` | Close window (alongside Omarchy's `Mod+w`) |
+| `Mod+Shift+h/j/k/l` | Swap window left/down/up/right |
+| `Mod+r` | Resize mode (`hjkl`/arrows, `Esc`/`Return` to exit) |
+| `Mod+e` | Editor (Zed, workspace 1) |
+| `Mod+n` | File manager (workspace 3) |
+| `Mod+d` | Apps menu (same as `Mod+Alt+Space`) |
+| `Mod+F2` | Personal cheatsheet (modal TUI) |
+| `Mod+Shift+r` | Reload Hyprland config |
 
 ---
 
@@ -179,12 +139,12 @@ Each directory is a stow package that maps to `$HOME`:
 | `git` | Git config + delta pager |
 | `hypr` | Hyprland overrides on top of Omarchy's defaults |
 | `lazygit` | Git TUI config + keybindings |
+| `mise` | Pinned toolchain (bun, claude, codex, gh, node, opencode) |
 | `nvim` | Neovim (LazyVim) config |
 | `omarchy` | Helper scripts (`launch-or-open`, `empty-workspace`) + menu extension |
 | `starship` | Shell prompt config |
 | `tmux` | Multiplexer config + Tokyo Night theme |
 | `vscode` | VS Code settings |
-| `yazi` | Terminal file manager config |
 | `zed` | Code editor config |
 | `zsh` | Shell config (zinit, aliases, integrations) |
 
