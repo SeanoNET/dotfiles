@@ -2,9 +2,12 @@
 
 Personal layer on top of [**Omarchy**](https://omarchy.org/) (Arch + Hyprland), with **Ghostty** and **Tmux**. Managed with [GNU Stow](https://www.gnu.org/software/stow/).
 
-Omarchy provides the compositor, shell (bar/notifications/menus), theming, login, screenshots and clipboard history. This repo layers on personal packages, Hyprland overrides that restore the sway keymap from the `wayland` branch, and the usual terminal/editor/shell configs.
+Omarchy provides the compositor, shell (bar/notifications/menus), theming, login, screenshots and clipboard history. This repo layers on personal packages, a few Hyprland additions on top of Omarchy's default keybindings, and the usual terminal/editor/shell configs.
 
 ## Quick Start
+
+Run `omarchy update` first — the bootstrap installs packages without a full
+sync, so the system needs to be current.
 
 ### One-liner (fresh Omarchy machine)
 

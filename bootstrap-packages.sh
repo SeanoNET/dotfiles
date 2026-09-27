@@ -113,9 +113,9 @@ else
     echo -e "${GREEN}✓${NC} yay installed"
 fi
 
-# ── Sync package database ──────────────────────────────────────────
-echo -e "${BLUE}Syncing package database...${NC}"
-sudo pacman -Sy
+# No `pacman -Sy` here: syncing the database and then installing single
+# packages is a partial upgrade. Run `omarchy update` before this script so
+# the system and database are current together.
 
 # ── Official Repository Packages ────────────────────────────────────
 
