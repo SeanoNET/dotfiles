@@ -1,8 +1,8 @@
 -- Personal keybindings.
 --
 -- Omarchy's defaults are kept as-is. Everything below sits on a key Omarchy
--- leaves free, so nothing here unbinds or replaces a default, and package
--- updates can keep adding bindings without colliding.
+-- leaves free, except SUPER + SHIFT + S (see the bottom), so package updates
+-- can keep adding bindings without colliding.
 --
 -- See the resulting map with: omarchy menu keybindings --print
 
@@ -79,3 +79,8 @@ o.bind("SUPER + F2", "Cheatsheet", "omarchy-launch-or-focus-tui --app-id=cheatsh
   o.shell_quote(os.getenv("HOME") .. "/dotfiles/CHEATSHEET.md"))
 
 o.bind("SUPER + SHIFT + R", "Reload Hyprland config", "hyprctl reload")
+
+-- The one default replaced: region screenshot to the clipboard is muscle
+-- memory on this key. Google Maps is still in the apps menu.
+hl.unbind("SUPER + SHIFT + S") -- was: Google Maps
+o.bind("SUPER + SHIFT + S", "Screenshot region", "omarchy-capture-screenshot region copy")

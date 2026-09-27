@@ -13,6 +13,7 @@ map. These are the personal additions on top.
 - `Mod+n` - File manager (workspace 3)
 - `Mod+d` - Apps menu
 - `Mod+Shift+r` - Reload Hyprland config
+- `Mod+Shift+s` - Screenshot region to clipboard (`Print` for the full tool)
 
 ## Custom Commands
 

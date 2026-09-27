@@ -74,6 +74,7 @@ omarchy menu keybindings --print
 | `Mod+d` | Apps menu (same as `Mod+Alt+Space`) |
 | `Mod+F2` | Personal cheatsheet (modal TUI) |
 | `Mod+Shift+r` | Reload Hyprland config |
+| `Mod+Shift+s` | Screenshot region to clipboard (replaces Omarchy's Google Maps) |
 
 ---
 
