@@ -27,3 +27,7 @@ o.window("discord", { focus_on_activate = false })
 -- Settings dialogs and about boxes are never worth tiling.
 o.window("^(qt5ct|qt6ct|Blueberry\\.py|nm-connection-editor)$", { float = true, center = true })
 o.window({ title = "^About " }, { float = true, center = true })
+
+-- Zen's video wake lock goes over D-Bus/portal, which Omarchy's idle monitor
+-- doesn't hear, so fullscreen video still hit the screensaver.
+o.window("^zen", { idle_inhibit = "fullscreen" })

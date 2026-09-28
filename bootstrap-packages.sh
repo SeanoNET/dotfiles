@@ -172,6 +172,7 @@ AUR_PACKAGES=(
     "1password-beta"
     "bambustudio-bin"
     "stably-orca-bin"
+    "wayland-pipewire-idle-inhibit"  # keeps idle off while audio plays
     "zen-browser-bin"
 )
 

@@ -13,3 +13,8 @@ o.launch_on_start("flatpak run com.discordapp.Discord")
 
 -- Nextcloud sync client, straight to the tray.
 o.launch_on_start("nextcloud --background")
+
+-- Hold off the screensaver while audio plays. Browsers ask to stay awake over
+-- D-Bus, which Omarchy's idle monitor doesn't hear; this speaks the Wayland
+-- idle-inhibit protocol it does.
+o.launch_on_start("wayland-pipewire-idle-inhibit")
